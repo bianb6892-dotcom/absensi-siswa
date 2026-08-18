@@ -10,13 +10,22 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    // Tambahkan di bagian fillable
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
         'kelas',
+        'ortu_id',
+        'nis',
     ];
+
+    // Tambahkan relasi
+    public function orangTua()
+    {
+        return $this->belongsTo(OrangTua::class, 'ortu_id');
+    }
 
     protected $hidden = [
         'password',
@@ -34,5 +43,21 @@ class User extends Authenticatable
     public function absensis()
     {
         return $this->hasMany(Absensi::class);
+    }
+
+    // Di bagian relasi, tambahkan method untuk cek role
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isGuru()
+    {
+        return $this->role === 'guru';
+    }
+
+    public function isOrtu()
+    {
+        return $this->role === 'ortu';
     }
 }

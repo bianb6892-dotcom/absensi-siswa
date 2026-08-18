@@ -13,24 +13,30 @@ class GalleryController extends Controller
     // Tampilkan halaman dashboard sekolah (public)
     public function index()
     {
+        // Ambil SEMUA gallery yang aktif (tanpa filter type)
+        $galleries = Gallery::where('is_active', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         // Data Jurusan dengan foto
         $jurusan = Gallery::where('type', 'jurusan')
             ->where('is_active', true)
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         // Data Eskul dengan foto
         $eskul = Gallery::where('type', 'eskul')
             ->where('is_active', true)
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         // Data Gallery Kegiatan
-        $galleries = Gallery::where('type', 'kegiatan')
+        $kegiatan = Gallery::where('type', 'kegiatan')
             ->where('is_active', true)
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
+        // Informasi sekolah
         $informasi = [
             'visi' => 'Membentuk generasi unggul, kreatif, dan berakhlak mulia melalui pendidikan yang berkualitas dan inovatif.',
             'misi' => [
@@ -55,7 +61,7 @@ class GalleryController extends Controller
             ]
         ];
 
-        return view('school.dashboard', compact('galleries', 'jurusan', 'eskul', 'informasi'));
+        return view('school.dashboard', compact('galleries', 'jurusan', 'eskul', 'kegiatan', 'informasi'));
     }
 
     // Admin: Kelola Gallery
@@ -140,11 +146,11 @@ class GalleryController extends Controller
     public function destroy($id)
     {
         $gallery = Gallery::findOrFail($id);
-        
+
         if ($gallery->image && Storage::disk('public')->exists($gallery->image)) {
             Storage::disk('public')->delete($gallery->image);
         }
-        
+
         $gallery->delete();
 
         return redirect()->route('gallery.manage')

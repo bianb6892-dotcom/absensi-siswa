@@ -38,7 +38,7 @@ class AbsensiController extends Controller
             ->orderBy('tanggal', 'desc')
             ->paginate(25);
         
-        $siswa = User::where('role', 'siswa')
+        $siswa = User::where('role', 'guru')
             ->where('kelas', $kelasTerpilih)
             ->orderBy('name')
             ->get();
@@ -52,7 +52,7 @@ class AbsensiController extends Controller
         
         session(['kelas_aktif' => $kelasTerpilih]);
         
-        $siswa = User::where('role', 'siswa')
+        $siswa = User::where('role', 'guru')
             ->where('kelas', $kelasTerpilih)
             ->orderBy('name')
             ->get();
@@ -154,7 +154,7 @@ class AbsensiController extends Controller
             ->orderBy('tanggal', 'desc')
             ->paginate(25);
         
-        $siswa = User::where('role', 'siswa')
+        $siswa = User::where('role', 'guru')
             ->where('kelas', $kelas)
             ->orderBy('name')
             ->get();
@@ -165,7 +165,7 @@ class AbsensiController extends Controller
     public function dashboard()
     {
         $kelasTerpilih = session('kelas_aktif', 'X PPLG');
-        $siswa = User::where('role', 'siswa')
+        $siswa = User::where('role', 'guru')
             ->where('kelas', $kelasTerpilih)
             ->orderBy('name')
             ->get();

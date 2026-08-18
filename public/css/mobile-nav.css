@@ -1,0 +1,231 @@
+/* ============================================ */
+/* MOBILE NAV - HAMBURGER & BOTTOM NAV          */
+/* ============================================ */
+
+/* ============================================ */
+/* HAMBURGER BUTTON - KANAN BAWAH               */
+/* ============================================ */
+.hamburger-btn-mobile {
+    display: none !important;
+    position: fixed !important;
+    bottom: 76px !important;
+    right: 16px !important;
+    z-index: 9999 !important;
+    background: #4f46e5 !important;
+    border: none !important;
+    border-radius: 50% !important;
+    padding: 14px 16px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4) !important;
+    color: #ffffff !important;
+    font-size: 24px !important;
+    width: 56px !important;
+    height: 56px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+}
+
+.hamburger-btn-mobile:hover {
+    transform: scale(1.05) !important;
+}
+
+.hamburger-btn-mobile:active {
+    transform: scale(0.95) !important;
+}
+
+.dark .hamburger-btn-mobile {
+    background: #FF8F00 !important;
+    box-shadow: 0 4px 20px rgba(255, 143, 0, 0.4) !important;
+}
+
+.dark .hamburger-btn-mobile:hover {
+    box-shadow: 0 6px 28px rgba(255, 143, 0, 0.5) !important;
+}
+
+/* ============================================ */
+/* OVERLAY                                      */
+/* ============================================ */
+.sidebar-overlay-mobile {
+    display: none !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9997 !important;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay-mobile.active {
+    display: block !important;
+    opacity: 1;
+}
+
+/* ============================================ */
+/* BOTTOM NAVIGATION                            */
+/* ============================================ */
+.bottom-nav-mobile {
+    display: none !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    z-index: 9998 !important;
+    padding: 6px 0;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.dark .bottom-nav-mobile {
+    background: #1a1a1a;
+    border-top: 1px solid #3d3d3d;
+}
+
+.bottom-nav-mobile .nav-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0px !important;
+    padding: 4px 8px !important;
+    color: #9ca3af !important;
+    text-decoration: none !important;
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    min-width: 44px !important;
+}
+
+.bottom-nav-mobile .nav-item .icon {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+}
+
+.bottom-nav-mobile .nav-item .label {
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+    color: #9ca3af !important;
+}
+
+.bottom-nav-mobile .nav-item.active {
+    color: #4f46e5 !important;
+}
+
+.bottom-nav-mobile .nav-item.active .label {
+    color: #4f46e5 !important;
+}
+
+.dark .bottom-nav-mobile .nav-item {
+    color: #6b7280 !important;
+}
+
+.dark .bottom-nav-mobile .nav-item.active {
+    color: #FF8F00 !important;
+}
+
+.dark .bottom-nav-mobile .nav-item.active .label {
+    color: #FF8F00 !important;
+}
+
+/* ============================================ */
+/* SCROLLABLE TABLE - RESPONSIVE                */
+/* ============================================ */
+.table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin: 0 -4px !important;
+    padding: 0 4px !important;
+}
+
+.table-wrapper table {
+    min-width: 600px !important;
+    width: 100% !important;
+}
+
+.table-wrapper table th,
+.table-wrapper table td {
+    white-space: nowrap !important;
+    padding: 8px 12px !important;
+}
+
+/* ============================================ */
+/* RESPONSIVE - MOBILE (< 768px)                */
+/* ============================================ */
+@media (max-width: 768px) {
+    /* Sembunyikan sidebar default */
+    .nav-sidebar {
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+        width: 280px !important;
+        display: flex !important;
+        z-index: 9998 !important;
+    }
+
+    .nav-sidebar.open {
+        transform: translateX(0) !important;
+    }
+
+    /* Sembunyikan toggle button dari navbar.css */
+    .nav-toggle {
+        display: none !important;
+    }
+
+    /* Main content */
+    .main-content {
+        margin-left: 0 !important;
+        padding: 60px 12px 80px 12px !important;
+        width: 100% !important;
+    }
+
+    /* Tampilkan hamburger */
+    .hamburger-btn-mobile {
+        display: flex !important;
+    }
+
+    /* Tampilkan overlay */
+    .sidebar-overlay-mobile {
+        display: block !important;
+    }
+
+    /* Tampilkan bottom nav */
+    .bottom-nav-mobile {
+        display: flex !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .main-content {
+        padding: 55px 10px 75px 10px !important;
+    }
+
+    .table-wrapper table {
+        min-width: 500px !important;
+        font-size: 13px !important;
+    }
+
+    .table-wrapper table th,
+    .table-wrapper table td {
+        padding: 6px 10px !important;
+    }
+}
+
+/* ============================================ */
+/* SEMBUNYIKAN HAMBURGER DI DESKTOP             */
+/* ============================================ */
+@media (min-width: 769px) {
+    .hamburger-btn-mobile {
+        display: none !important;
+    }
+
+    .sidebar-overlay-mobile {
+        display: none !important;
+    }
+
+    .bottom-nav-mobile {
+        display: none !important;
+    }
+}
