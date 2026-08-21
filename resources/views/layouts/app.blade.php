@@ -1,16 +1,20 @@
 <!doctype html>
-<html lang="id" class="light">
+<html lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Absensi Siswa')</title>
+    <title>@yield('title', 'Absensi Siswa') | SMK Digital Nusantara</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
 
     <!-- Mobile Nav CSS -->
     <link rel="stylesheet" href="{{ asset('css/mobile-nav.css') }}">
@@ -31,531 +35,83 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
                     },
-                    colors: {
-                        primary: {
-                            50: '#e8f0fe',
-                            100: '#c5ddfc',
-                            200: '#a3c9fa',
-                            300: '#80b5f8',
-                            400: '#5ea1f6',
-                            500: '#47A5FF',
-                            600: '#2b7fd9',
-                            700: '#1f5fb3',
-                            800: '#14408c',
-                            900: '#0a2066',
-                        },
-                        orange: {
-                            500: '#FF8F00',
-                            600: '#e68000',
-                            700: '#cc7200',
-                            800: '#b26400',
-                            900: '#995500',
-                        }
-                    }
+                    boxShadow: {
+                        card: '0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px -4px rgba(15, 23, 42, 0.08)',
+                        'card-hover': '0 2px 4px rgba(15, 23, 42, 0.05), 0 8px 24px -8px rgba(15, 23, 42, 0.10)',
+                        modal: '0 10px 40px -10px rgba(15, 23, 42, 0.25)',
+                    },
                 }
             }
         }
     </script>
 
-    <style>
-        /* Light Mode - Default */
+<style type="text/tailwindcss">
         body {
-            background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
-            color: #1a2332;
+            background: #F8FAFC;
+            color: #334155;
         }
 
-        /* Light Mode - Elemen biru muda */
-        .bg-white {
-            background-color: #ffffff !important;
+        .card {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 1rem;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px -4px rgba(15, 23, 42, 0.08);
         }
 
-        .card-gradient-light {
-            background: linear-gradient(145deg, #ffffff 0%, #f5faff 100%) !important;
-            border: 1px solid #d6e8ff !important;
-            box-shadow: 0 2px 16px rgba(71, 165, 255, 0.10) !important;
-            border-radius: 12px;
+        .card:hover {
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05), 0 8px 24px -8px rgba(15, 23, 42, 0.10);
+            border-color: #CBD5E1;
         }
 
-        .card-gradient-light:hover {
-            box-shadow: 0 6px 28px rgba(71, 165, 255, 0.18) !important;
-            border-color: #b8d9ff !important;
-        }
-
-        /* Light Mode - Background card dalam */
-        .bg-gray-50 {
-            background-color: #f5faff !important;
-        }
-
-        .bg-gray-100 {
-            background-color: #edf5ff !important;
-        }
-
-        .bg-gray-200 {
-            background-color: #dce8f5 !important;
-        }
-
-        /* Light Mode - Text Colors - Jelas dan Kontras */
-        .text-gray-900 {
-            color: #0a1a2b !important;
-        }
-
-        .text-gray-800 {
-            color: #1a2d44 !important;
-        }
-
-        .text-gray-700 {
-            color: #2a4058 !important;
-        }
-
-        .text-gray-600 {
-            color: #3a5570 !important;
-        }
-
-        .text-gray-500 {
-            color: #4a6a88 !important;
-        }
-
-        .text-gray-400 {
-            color: #6a8aa8 !important;
-        }
-
-        .text-gray-300 {
-            color: #8aaac8 !important;
-        }
-
-        /* Light Mode - Border */
-        .border-gray-200 {
-            border-color: #d6e8ff !important;
-        }
-
-        .border-gray-300 {
-            border-color: #c0d8f0 !important;
-        }
-
-        .border-gray-100 {
-            border-color: #e8f2ff !important;
-        }
-
-        /* ============================================ */
-        /* DARK MODE - FULL UPDATE */
-        /* ============================================ */
-        .dark body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #141414 50%, #1a1a1a 100%);
-            color: #e8e8e8;
-        }
-
-        .dark .bg-white {
-            background: linear-gradient(145deg, #1a1a1a 0%, #222222 100%) !important;
-        }
-
-        .dark .card-gradient-light {
-            background: linear-gradient(145deg, #1a1a1a 0%, #262626 100%) !important;
-            border: 1px solid #3d3d3d !important;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.5) !important;
-        }
-
-        .dark .card-gradient-light:hover {
-            box-shadow: 0 6px 28px rgba(255, 143, 0, 0.06) !important;
-            border-color: #4d4d4d !important;
-        }
-
-        .dark .bg-gray-50 {
-            background: #1a1a1a !important;
-        }
-
-        .dark .bg-gray-100 {
-            background: #262626 !important;
-        }
-
-        .dark .bg-gray-200 {
-            background: #333333 !important;
-        }
-
-        .dark .bg-gray-300 {
-            background: #404040 !important;
-        }
-
-        /* Dark Mode - Text Colors - Jelas dan Kontras */
-        .dark .text-gray-900 {
-            color: #f0f0f0 !important;
-        }
-
-        .dark .text-gray-800 {
-            color: #e0e0e0 !important;
-        }
-
-        .dark .text-gray-700 {
-            color: #d0d0d0 !important;
-        }
-
-        .dark .text-gray-600 {
-            color: #bfbfbf !important;
-        }
-
-        .dark .text-gray-500 {
-            color: #a0a0a0 !important;
-        }
-
-        .dark .text-gray-400 {
-            color: #888888 !important;
-        }
-
-        .dark .text-gray-300 {
-            color: #707070 !important;
-        }
-
-        /* Dark Mode - Border Colors */
-        .dark .border-gray-200 {
-            border-color: #3d3d3d !important;
-        }
-
-        .dark .border-gray-300 {
-            border-color: #4a4a4a !important;
-        }
-
-        .dark .border-gray-100 {
-            border-color: #2a2a2a !important;
-        }
-
-        .dark .divide-gray-200>*+* {
-            border-color: #3d3d3d !important;
-        }
-
-        /* Dark Mode - Input */
-        .dark input,
-        .dark select,
-        .dark textarea {
-            background: #262626 !important;
-            color: #e8e8e8 !important;
-            border-color: #4a4a4a !important;
-        }
-
-        .dark input:focus,
-        .dark select:focus,
-        .dark textarea:focus {
-            border-color: #FF8F00 !important;
-            outline: none !important;
-            box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.15) !important;
-        }
-
-        .dark input::placeholder,
-        .dark textarea::placeholder {
-            color: #888888 !important;
-        }
-
-        /* Dark Mode - Table */
-        .dark table thead tr {
-            background: #2a2a2a !important;
-        }
-
-        .dark table thead tr th {
-            color: #e8e8e8 !important;
-            font-weight: 700 !important;
-            border-color: #3d3d3d !important;
-        }
-
-        .dark table tbody tr {
-            border-color: #3d3d3d !important;
-        }
-
-        .dark table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.03) !important;
-        }
-
-        .dark table tbody td {
-            color: #d0d0d0 !important;
-            border-color: #3d3d3d !important;
-        }
-
-        /* Dark Mode - Badge Status */
-        .dark .status-hadir {
-            background: rgba(16, 185, 129, 0.2) !important;
-            color: #6ee7b7 !important;
-            border-color: rgba(16, 185, 129, 0.3) !important;
-        }
-
-        .dark .status-izin {
-            background: rgba(245, 158, 11, 0.2) !important;
-            color: #fcd34d !important;
-            border-color: rgba(245, 158, 11, 0.3) !important;
-        }
-
-        .dark .status-sakit {
-            background: rgba(59, 130, 246, 0.2) !important;
-            color: #93c5fd !important;
-            border-color: rgba(59, 130, 246, 0.3) !important;
-        }
-
-        .dark .status-alpa {
-            background: rgba(244, 63, 94, 0.2) !important;
-            color: #fca5a5 !important;
-            border-color: rgba(244, 63, 94, 0.3) !important;
-        }
-
-        .dark .status-tidak_masuk {
-            background: rgba(244, 63, 94, 0.2) !important;
-            color: #fca5a5 !important;
-            border-color: rgba(244, 63, 94, 0.3) !important;
-        }
-
-        /* Dark Mode - Alerts */
-        .dark .bg-emerald-50 {
-            background: rgba(16, 185, 129, 0.1) !important;
-            border-color: rgba(16, 185, 129, 0.2) !important;
-        }
-
-        .dark .bg-rose-50 {
-            background: rgba(244, 63, 94, 0.1) !important;
-            border-color: rgba(244, 63, 94, 0.2) !important;
-        }
-
-        .dark .bg-amber-50 {
-            background: rgba(245, 158, 11, 0.1) !important;
-            border-color: rgba(245, 158, 11, 0.2) !important;
-        }
-
-        .dark .text-emerald-700 {
-            color: #6ee7b7 !important;
-        }
-
-        .dark .text-rose-700 {
-            color: #fca5a5 !important;
-        }
-
-        .dark .text-amber-700 {
-            color: #fcd34d !important;
-        }
-
-        .dark .border-emerald-200 {
-            border-color: rgba(16, 185, 129, 0.2) !important;
-        }
-
-        .dark .border-rose-200 {
-            border-color: rgba(244, 63, 94, 0.2) !important;
-        }
-
-        .dark .border-amber-200 {
-            border-color: rgba(245, 158, 11, 0.2) !important;
-        }
-
-        /* Dark Mode - Buttons */
-        .dark .bg-primary-500 {
-            background: #FF8F00 !important;
-        }
-
-        .dark .bg-primary-500:hover {
-            background: #e68000 !important;
-        }
-
-        .dark .text-primary-500 {
-            color: #FF8F00 !important;
-        }
-
-        .dark .text-primary-600 {
-            color: #e68000 !important;
-        }
-
-        .dark .border-primary-500 {
-            border-color: #FF8F00 !important;
-        }
-
-        .dark .hover\:bg-primary-600:hover {
-            background: #e68000 !important;
-        }
-
-        /* Dark Mode - Summary Stats Cards */
-        .dark .border-emerald-100 {
-            border-color: rgba(16, 185, 129, 0.15) !important;
-        }
-
-        .dark .border-amber-100 {
-            border-color: rgba(245, 158, 11, 0.15) !important;
-        }
-
-        .dark .border-blue-100 {
-            border-color: rgba(59, 130, 246, 0.15) !important;
-        }
-
-        .dark .border-rose-100 {
-            border-color: rgba(244, 63, 94, 0.15) !important;
-        }
-
-        .dark .bg-emerald-100 {
-            background: rgba(16, 185, 129, 0.15) !important;
-        }
-
-        .dark .bg-amber-100 {
-            background: rgba(245, 158, 11, 0.15) !important;
-        }
-
-        .dark .bg-blue-100 {
-            background: rgba(59, 130, 246, 0.15) !important;
-        }
-
-        .dark .bg-rose-100 {
-            background: rgba(244, 63, 94, 0.15) !important;
-        }
-
-        .dark .text-emerald-600 {
-            color: #6ee7b7 !important;
-        }
-
-        .dark .text-amber-600 {
-            color: #fcd34d !important;
-        }
-
-        .dark .text-blue-600 {
-            color: #93c5fd !important;
-        }
-
-        .dark .text-rose-600 {
-            color: #fca5a5 !important;
-        }
-
-        /* Dark Mode - Navbar Sidebar */
-        .dark .nav-sidebar {
-            background: linear-gradient(180deg, #0a0a0a 0%, #141414 50%, #1a1a1a 100%) !important;
-            border-right: 1px solid #2a2a2a !important;
-        }
-
-        .dark .nav-sidebar .nav-item .label {
-            color: rgba(255, 255, 255, 0.7) !important;
-        }
-
-        .dark .nav-sidebar .nav-item:hover .label {
-            color: #ffffff !important;
-        }
-
-        .dark .nav-sidebar .nav-item.active .label {
-            color: #FF8F00 !important;
-        }
-
-        .dark .nav-sidebar .nav-item.active {
-            background: rgba(255, 143, 0, 0.15) !important;
-            box-shadow: inset 0 0 0 1px rgba(255, 143, 0, 0.2) !important;
-        }
-
-        .dark .nav-sidebar .nav-item.active::before {
-            background: #FF8F00 !important;
-        }
-
-        .dark .nav-sidebar .brand span {
-            color: rgba(255, 255, 255, 0.4) !important;
-        }
-
-        .dark .nav-sidebar .nav-divider {
-            background: rgba(255, 255, 255, 0.06) !important;
-        }
-
-        .dark .nav-sidebar .nav-footer {
-            border-color: rgba(255, 255, 255, 0.06) !important;
-        }
-
-        .dark .nav-sidebar .nav-footer .user-info {
-            background: rgba(255, 255, 255, 0.03) !important;
-        }
-
-        .dark .nav-sidebar .nav-footer .user-info:hover {
-            background: rgba(255, 255, 255, 0.06) !important;
-        }
-
-        .dark .nav-sidebar .nav-footer .user-role {
-            color: rgba(255, 255, 255, 0.3) !important;
-        }
-
-        /* Dark Mode - Toggle Button */
-        .dark .nav-toggle {
-            background: #1a1a1a !important;
-            color: #e8e8e8 !important;
-            border-color: #2a2a2a !important;
-        }
-
-        .dark .nav-toggle:hover {
-            background: #262626 !important;
-        }
-
-        /* Dark Mode - Tabs */
-        .dark .border-b-2 {
-            border-color: #3d3d3d !important;
-        }
-
-        .dark .border-cv-500 {
-            border-color: #FF8F00 !important;
-        }
-
-        .dark .text-cv-600 {
-            color: #FF8F00 !important;
-        }
-
-        .dark .hover\:text-cv-600:hover {
-            color: #FF8F00 !important;
-        }
-
-        /* Dark Mode - Scrollbar */
-        .dark ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-
-        .dark ::-webkit-scrollbar-thumb {
-            background: #FF8F00;
-            border-radius: 4px;
-        }
-
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #e68000;
-        }
-
-        /* Dark Mode - Card Shadows */
-        .dark .shadow-sm {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
-        }
+        /* Status badge helpers */
+        .badge-hadir { background: #ECFDF5; color: #047857; }
+        .badge-ijin { background: #FFFBEB; color: #B45309; }
+        .badge-sakit { background: #F0F9FF; color: #0369A1; }
+        .badge-tidak { background: #FFF1F2; color: #BE123C; }
 
-        .dark .shadow-lg {
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
-        }
-
-        .dark .shadow-xl {
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
-        }
+        .status-select.badge-hadir { border-color: #6EE7B7; }
+        .status-select.badge-ijin { border-color: #FCD34D; }
+        .status-select.badge-sakit { border-color: #7DD3FC; }
+        .status-select.badge-tidak { border-color: #FDA4AF; }
 
-        /* Table Styles */
+        /* Table */
         table {
             border-collapse: separate;
             border-spacing: 0;
         }
 
         table thead tr th:first-child {
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
         }
 
         table thead tr th:last-child {
-            border-top-right-radius: 12px;
-            border-bottom-right-radius: 12px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
 
-        /* Light mode table */
         table thead tr {
-            background-color: #e8f2ff !important;
-        }
-
-        table thead tr th {
-            color: #1a2d44 !important;
-            font-weight: 700 !important;
+            background-color: #F1F5F9 !important;
         }
 
         table tbody tr {
-            border-color: #d6e8ff !important;
+            border-color: #F1F5F9 !important;
         }
 
         table tbody tr:hover {
-            background-color: #f0f7ff !important;
+            background-color: #F8FAFC !important;
         }
 
-        table tbody td {
-            color: #1a2332 !important;
+        /* Focus state (accessibility) */
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid rgba(29, 78, 216, 0.45);
+            outline-offset: 2px;
         }
 
         /* Toast */
@@ -574,14 +130,10 @@
             cursor: pointer;
         }
 
-        /* Transition */
         * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
 
-        /* ============================================ */
-        /* SCROLLABLE TABLE                            */
-        /* ============================================ */
         .table-wrapper {
             overflow-x: auto !important;
             -webkit-overflow-scrolling: touch !important;
@@ -590,7 +142,7 @@
         }
 
         .table-wrapper table {
-            min-width: 600px !important;
+            min-width: max-content !important;
             width: 100% !important;
         }
 
@@ -602,7 +154,6 @@
 
         @media (max-width: 640px) {
             .table-wrapper table {
-                min-width: 500px !important;
                 font-size: 13px !important;
             }
 
@@ -611,12 +162,38 @@
                 padding: 6px 10px !important;
             }
         }
+
+        /* Reusable component classes */
+        .btn {
+            @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors;
+        }
+        .btn-primary {
+            @apply bg-blue-700 text-white shadow-sm hover:bg-blue-800;
+        }
+        .btn-outline {
+            @apply border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-slate-900;
+        }
+.btn-outline-blue {
+            @apply border border-blue-700 bg-white text-blue-700 shadow-sm hover:bg-blue-50;
+        }
+        .btn-danger {
+            @apply border border-rose-200 bg-white text-rose-600 shadow-sm hover:bg-rose-50;
+        }
+        .input {
+            @apply w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15;
+        }
+        .label {
+            @apply mb-1.5 block text-sm font-semibold text-slate-700;
+        }
+        .input.pl-11 {
+            padding-left: 2.75rem;
+        }
     </style>
 
     @stack('styles')
 </head>
 
-<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex">
+<body class="font-sans antialiased min-h-screen flex">
 
     <!-- Overlay -->
     <div id="navOverlay" class="nav-overlay" onclick="toggleNav()"></div>
@@ -625,58 +202,88 @@
     <nav id="sidebar" class="nav-sidebar hidden">
         <div class="brand">
             <h1>
-                <span class="logo-icon"></span>
-                Absensi Siswa
+                <span class="logo-icon"><i class="ph ph-student ph-fill"></i></span>
+                <div>
+                    Absensi Siswa
+                    <span>SMK Digital Nusantara</span>
+                </div>
             </h1>
         </div>
 
         <div class="nav-menu">
             @auth
                 @if(auth()->user()->role == 'admin')
-                    <!-- ADMIN: Dashboard + Users -->
+                    <p class="nav-section">Menu Utama</p>
                     <a href="{{ route('admin.dashboard') }}"
                         class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <span class="icon">📊</span><span class="label">Dashboard</span>
+                        <span class="icon"><i class="ph ph-squares-four"></i></span><span class="label">Dashboard</span>
                     </a>
                     <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                        <span class="icon">👥</span><span class="label">Users</span>
+                        <span class="icon"><i class="ph ph-users-three"></i></span><span class="label">Manajemen User</span>
                     </a>
-                    <form id="logout-form-bottom" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf
-                    </form>
+                    <p class="nav-section">Absensi</p>
+                    <a href="{{ route('absensi.create') }}" class="nav-item {{ request()->routeIs('absensi.create') || request()->routeIs('absensi.store') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-clipboard-text"></i></span><span class="label">Input Absensi</span>
+                    </a>
+                    <a href="{{ route('absensi.index') }}" class="nav-item {{ request()->is('admin/absensi') || request()->is('admin/absensi/*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-clock-counter-clockwise"></i></span><span class="label">Riwayat Absensi</span>
+                    </a>
+                    <a href="{{ route('import.absensi') }}" class="nav-item {{ request()->routeIs('import.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-file-arrow-up"></i></span><span class="label">Import Absensi</span>
+                    </a>
+                    <p class="nav-section">Konten</p>
+                    <a href="{{ route('gallery.manage') }}" class="nav-item {{ request()->routeIs('gallery.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-images"></i></span><span class="label">Gallery Sekolah</span>
+                    </a>
 
                 @elseif(auth()->user()->role == 'guru')
-                    <!-- GURU: Dashboard + Gallery + Absensi Cepat -->
+                    <p class="nav-section">Menu Utama</p>
                     <a href="{{ route('guru.dashboard') }}"
                         class="nav-item {{ request()->routeIs('guru.dashboard') ? 'active' : '' }}">
-                        <span class="icon">📊</span><span class="label">Dashboard</span>
+                        <span class="icon"><i class="ph ph-squares-four"></i></span><span class="label">Dashboard</span>
                     </a>
-                    <a href="{{ route('gallery.manage') }}"
-                        class="nav-item {{ request()->routeIs('gallery.*') ? 'active' : '' }}">
-                        <span class="icon">🖼️</span><span class="label">Gallery</span>
-                    </a>
-                    <a href="{{ route('absensi.cepat') }}"
-                        class="nav-item {{ request()->routeIs('absensi.cepat*') ? 'active' : '' }}">
-                        <span class="icon">⚡</span><span class="label">Absen</span>
+                    <p class="nav-section">Absensi</p>
+                    <a href="{{ route('guru.absensi.create') }}"
+                        class="nav-item {{ request()->routeIs('guru.absensi.create') || request()->routeIs('guru.absensi.store') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-clipboard-text"></i></span><span class="label">Input Absensi</span>
                     </a>
                     <a href="{{ route('guru.absensi.index') }}"
-                        class="nav-item {{ request()->routeIs('guru.absensi.index') ? 'active' : '' }}">
-                        <span class="icon">📋</span> <span class="label">Riwayat Absensi</span>
+                        class="nav-item {{ request()->routeIs('guru.absensi.index') || request()->is('guru/absensi') || request()->is('guru/absensi/*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-clock-counter-clockwise"></i></span><span class="label">Riwayat Absensi</span>
                     </a>
-                    <form id="logout-form-bottom" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf
-                    </form>
+                    <a href="{{ route('absensi.cepat') }}" class="nav-item {{ request()->routeIs('absensi.cepat*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-lightning"></i></span><span class="label">Absensi Cepat</span>
+                    </a>
+                    <p class="nav-section">Nilai</p>
+                    <a href="{{ route('guru.nilai.index', 'setengah-semester') }}"
+                        class="nav-item {{ request()->is('guru/nilai/setengah-semester*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-book-open"></i></span><span class="label">Nilai Setengah Semester</span>
+                    </a>
+                    <a href="{{ route('guru.nilai.index', 'akhir-semester') }}"
+                        class="nav-item {{ request()->is('guru/nilai/akhir-semester*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-books"></i></span><span class="label">Nilai Akhir Semester</span>
+                    </a>
+                    <p class="nav-section">Konten</p>
+                    <a href="{{ route('gallery.manage') }}" class="nav-item {{ request()->routeIs('gallery.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-images"></i></span><span class="label">Gallery Sekolah</span>
+                    </a>
 
                 @elseif(auth()->user()->role == 'ortu')
+                    <p class="nav-section">Menu Utama</p>
                     <a href="{{ route('ortu.dashboard') }}"
                         class="nav-item {{ request()->routeIs('ortu.dashboard') ? 'active' : '' }}">
-                        <span class="icon">📊</span><span class="label">Dashboard</span>
+                        <span class="icon"><i class="ph ph-squares-four"></i></span><span class="label">Dashboard</span>
                     </a>
+                    <a href="{{ route('ortu.nilai') }}"
+                        class="nav-item {{ request()->routeIs('ortu.nilai') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-graduation-cap"></i></span><span class="label">Nilai Anak</span>
+                    </a>
+                    <p class="nav-section">Konten</p>
                     <a href="{{ route('school.dashboard') }}"
                         class="nav-item {{ request()->routeIs('school.dashboard') ? 'active' : '' }}">
-                        <span class="icon">🖼️</span>
+                        <span class="icon"><i class="ph ph-images"></i></span>
                         <span class="label">Gallery Sekolah</span>
                     </a>
-                    <form id="logout-form-bottom" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf
-                    </form>
                 @endif
             @endauth
         </div>
@@ -685,50 +292,94 @@
             @auth
                 <div class="user-info">
                     <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
-                    <div>
-                        <div class="user-name">{{ auth()->user()->name }}</div>
+                    <div class="min-w-0">
+                        <div class="user-name truncate">{{ auth()->user()->name }}</div>
                         <div class="user-role">
-                            {{ auth()->user()->role == 'admin' ? 'Administrator' : auth()->user()->kelas ?? 'Siswa' }}
+                            @if(auth()->user()->role == 'admin')
+                                Administrator
+                            @elseif(auth()->user()->role == 'guru')
+                                Guru
+                            @elseif(auth()->user()->role == 'siswa')
+                                {{ auth()->user()->kelas ?? 'Siswa' }}
+                            @else
+                                Orang Tua
+                            @endif
                         </div>
                     </div>
                 </div>
 
+                <a href="{{ route('pengaturan.show') }}"
+                    class="nav-item w-full mt-3" style="background: rgba(255, 255, 255, 0.08); color: #fff; border: none; margin-bottom: 2px;">
+                    <span class="icon"><i class="ph ph-gear"></i></span>
+                    <span class="label">Pengaturan</span>
+                </a>
+
                 <form action="{{ route('logout') }}" method="POST" class="mt-3">
                     @csrf
                     <button type="submit" class="nav-item w-full"
-                        style="background: rgba(239, 68, 68, 0.1); color: #f87171; border: none; width: 100%; text-align: left;">
+                        style="background: rgba(255, 255, 255, 0.08); color: #fff; border: none;">
                         <span class="icon"><i class="ph ph-sign-out"></i></span>
-                        <span class="label">Logout</span>
+                        <span class="label">Keluar</span>
                     </button>
                 </form>
             @endauth
         </div>
     </nav>
 
-    <!-- Main Content - Centered -->
+    <!-- Main Content -->
     <main id="mainContent" class="main-content expanded">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             @if(session('success'))
-                <div
-                    class="mb-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-lg flex items-center gap-3 shadow-sm">
-                    <i class="ph-fill ph-check-circle text-emerald-500 text-xl"></i>
-                    <span>{{ session('success') }}</span>
+                <div class="mb-5 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3.5">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-700 text-white">
+                        <i class="ph-fill ph-check-circle text-lg"></i>
+                    </div>
+                    <p class="text-sm font-medium text-blue-800">{{ session('success') }}</p>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-blue-600 hover:text-blue-800">
+                        <i class="ph ph-x"></i>
+                    </button>
                 </div>
             @endif
 
             @if(session('error'))
-                <div
-                    class="mb-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 px-4 py-3 rounded-lg flex items-center gap-3 shadow-sm">
-                    <i class="ph-fill ph-x-circle text-rose-500 text-xl"></i>
-                    <span>{{ session('error') }}</span>
+                <div class="mb-5 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3.5">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-600 text-white">
+                        <i class="ph-fill ph-x-circle text-lg"></i>
+                    </div>
+                    <p class="text-sm font-medium text-rose-800">{{ session('error') }}</p>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-rose-600 hover:text-rose-800">
+                        <i class="ph ph-x"></i>
+                    </button>
                 </div>
             @endif
 
             @if(session('warning'))
-                <div
-                    class="mb-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 px-4 py-3 rounded-lg flex items-center gap-3 shadow-sm">
-                    <i class="ph-fill ph-warning-circle text-amber-500 text-xl"></i>
-                    <span>{{ session('warning') }}</span>
+                <div class="mb-5 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white">
+                        <i class="ph-fill ph-warning-circle text-lg"></i>
+                    </div>
+                    <p class="text-sm font-medium text-amber-800">{{ session('warning') }}</p>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-amber-600 hover:text-amber-800">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+            @endif
+
+            @if(isset($errors) && $errors->any())
+                <div class="mb-5 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3.5">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-600 text-white">
+                        <i class="ph-fill ph-warning text-lg"></i>
+                    </div>
+                    <div class="text-sm font-medium text-rose-800">
+                        <ul class="list-disc list-inside space-y-0.5">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-rose-600 hover:text-rose-800">
+                        <i class="ph ph-x"></i>
+                    </button>
                 </div>
             @endif
 
@@ -737,33 +388,25 @@
     </main>
 
     <div id="toast"
-        class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
-        <i class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
+        class="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl bg-slate-900 px-5 py-4 text-white shadow-lg shadow-slate-900/20 opacity-0 translate-y-24 transition-all duration-300 z-50">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
+            <i class="ph-fill ph-check-circle text-lg text-white"></i>
+        </div>
         <div>
             <h4 class="text-sm font-bold">Berhasil!</h4>
-            <p class="text-xs text-gray-300" id="toast-message">Data telah disimpan.</p>
+            <p class="text-xs text-blue-200" id="toast-message">Data telah disimpan.</p>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // SIDEBAR SELALU TERBUKA - TANPA TOGGLE
-        // ============================================
         document.addEventListener('DOMContentLoaded', function () {
-            // Sidebar selalu terbuka - tidak ada tombol toggle
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
 
-            // Pastikan sidebar terlihat
             sidebar.style.display = 'flex';
             sidebar.style.transform = 'translateX(0)';
-            mainContent.style.marginLeft = '280px';
-
-            // Load theme
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
+            if (window.innerWidth > 768) {
+                mainContent.style.marginLeft = '264px';
             }
         });
 
@@ -782,14 +425,13 @@
 
     @stack('scripts')
 
-    <!-- Mobile Nav HTML -->
+    <!-- Mobile Nav -->
     <button class="hamburger-btn-mobile" onclick="toggleMobileSidebar()" aria-label="Toggle Navigation">
         <i class="ph ph-list"></i>
     </button>
 
     <div id="sidebarOverlayMobile" class="sidebar-overlay-mobile" onclick="closeMobileSidebar()"></div>
 
-    <!-- Mobile Nav JS -->
     <script src="{{ asset('js/mobile-nav.js') }}"></script>
 </body>
 

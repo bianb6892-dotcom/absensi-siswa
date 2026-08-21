@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -13,30 +13,25 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat admin
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@absensi.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
-
         // Buat siswa
         $siswa = [
-            ['name' => 'Budi Santoso', 'email' => 'budi@siswa.com'],
-            ['name' => 'Ani Rahayu', 'email' => 'ani@siswa.com'],
-            ['name' => 'Citra Dewi', 'email' => 'citra@siswa.com'],
-            ['name' => 'Dedi Firmansyah', 'email' => 'dedi@siswa.com'],
-            ['name' => 'Eka Putri', 'email' => 'eka@siswa.com'],
+            ['name' => 'Budi Santoso', 'email' => 'budi@siswa.com', 'kelas' => 'X PPLG'],
+            ['name' => 'Ani Rahayu', 'email' => 'ani@siswa.com', 'kelas' => 'X PPLG'],
+            ['name' => 'Citra Dewi', 'email' => 'citra@siswa.com', 'kelas' => 'X TJKT'],
+            ['name' => 'Dedi Firmansyah', 'email' => 'dedi@siswa.com', 'kelas' => 'X TJKT'],
+            ['name' => 'Eka Putri', 'email' => 'eka@siswa.com', 'kelas' => 'X PPLG'],
         ];
 
         foreach ($siswa as $s) {
-            User::create([
-                'name' => $s['name'],
-                'email' => $s['email'],
-                'password' => Hash::make('password'),
-                'role' => 'siswa',
-            ]);
+            User::updateOrCreate(
+                ['email' => $s['email']],
+                [
+                    'name' => $s['name'],
+                    'password' => Hash::make('password'),
+                    'role' => 'siswa',
+                    'kelas' => $s['kelas'],
+                ]
+            );
         }
     }
 }

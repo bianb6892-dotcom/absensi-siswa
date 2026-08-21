@@ -3,122 +3,125 @@
 @section('title', 'Kelola User')
 
 @section('content')
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <i class="ph-fill ph-users text-primary-500"></i>
-                Kelola User
-            </h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm">Kelola semua user yang terdaftar.</p>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Manajemen User</h1>
+            <p class="mt-1 text-sm text-slate-500">Kelola semua akun yang terdaftar di sistem.</p>
         </div>
-        <a href="{{ route('register.show') }}"
-            class="inline-flex items-center px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm">
-            <i class="ph ph-user-plus mr-2"></i>
-            Tambah User Baru
-        </a>
+        <div class="flex flex-wrap gap-3">
+            <button type="button" onclick="openImportModal()" class="btn btn-outline">
+                <i class="ph ph-file-csv text-lg"></i>
+                Import Excel
+            </button>
+            <a href="{{ route('register.show') }}" class="btn btn-primary">
+                <i class="ph ph-user-plus text-lg"></i>
+                Tambah User
+            </a>
+        </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="p-5 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Daftar User</h2>
+    <div class="card overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/60 px-5 py-4">
+            <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    <i class="ph-fill ph-users-three"></i>
+                </div>
+                <h2 class="text-base font-bold text-slate-900">Daftar User</h2>
+            </div>
+            <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+                {{ $users->count() }} user
+            </span>
         </div>
         <div class="p-5">
-            @if(session('success'))
-                <div
-                    class="mb-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-lg flex items-center gap-3">
-                    <i class="ph-fill ph-check-circle text-emerald-500 text-xl"></i>
-                    <span>{{ session('success') }}</span>
+            <form method="GET" action="{{ route('users.index') }}"
+                class="mb-4 flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 min-w-[200px] max-w-sm">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                        <i class="ph ph-magnifying-glass text-slate-400"></i>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="input pl-11" placeholder="Cari nama / NIS / email...">
                 </div>
-            @endif
-            @if(session('error'))
-                <div
-                    class="mb-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 px-4 py-3 rounded-lg flex items-center gap-3">
-                    <i class="ph-fill ph-x-circle text-rose-500 text-xl"></i>
-                    <span>{{ session('error') }}</span>
-                </div>
-            @endif
+                <select name="role" onchange="this.form.submit()" class="input w-44">
+                    <option value="">Semua Role</option>
+                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="guru" {{ request('role') == 'guru' ? 'selected' : '' }}>Guru</option>
+                    <option value="siswa" {{ request('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
+                    <option value="ortu" {{ request('role') == 'ortu' ? 'selected' : '' }}>Orang Tua</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="ph ph-magnifying-glass text-lg"></i>
+                    Cari
+                </button>
+                @if(request('search') || request('role'))
+                    <a href="{{ route('users.index') }}" class="btn btn-outline">
+                        <i class="ph ph-x text-lg"></i>
+                        Reset
+                    </a>
+                @endif
+            </form>
 
-            <div class="table-responsive">
+            <div class="table-wrapper">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="bg-gray-100 dark:bg-gray-700/50 rounded-xl">
-                            <th
-                                class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider rounded-l-xl">
-                                No</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                Nama</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                Email</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                Role</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider rounded-r-xl">
-                                Aksi</th>
+                        <tr>
+                            <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">No</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Nama</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Email</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Role</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-slate-100">
                         @foreach($users as $key => $u)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                <td data-label="No"
-                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{{ $key + 1 }}
-                                </td>
-                                <td data-label="Nama" class="px-4 py-3 whitespace-nowrap">
+                            <tr class="transition-colors hover:bg-slate-50/70">
+                                <td class="px-4 py-3.5 whitespace-nowrap text-sm font-medium text-slate-500">{{ $key + 1 }}</td>
+                                <td class="px-4 py-3.5 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div
-                                            class="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-xs">
+                                            class="h-9 w-9 rounded-lg bg-blue-700 flex items-center justify-center text-white font-bold text-xs">
                                             {{ strtoupper(substr($u->name, 0, 2)) }}
                                         </div>
-                                        <span
-                                            class="ml-3 text-sm font-medium text-gray-900 dark:text-white">{{ $u->name }}</span>
+                                        <span class="ml-3 text-sm font-semibold text-slate-900">{{ $u->name }}</span>
                                     </div>
                                 </td>
-                                <td data-label="Email"
-                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{{ $u->email }}
-                                </td>
-                                <td data-label="Role" class="px-4 py-3 whitespace-nowrap">
+                                <td class="px-4 py-3.5 whitespace-nowrap text-sm text-slate-500">{{ $u->email }}</td>
+                                <td class="px-4 py-3.5 whitespace-nowrap">
                                     @php
                                         $roleLabels = [
-                                            'admin' => ['label' => 'Admin', 'color' => 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'],
-                                            'guru' => ['label' => 'Guru', 'color' => 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'],
-                                            'ortu' => ['label' => 'Orang Tua', 'color' => 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'],
+                                            'admin' => ['label' => 'Admin', 'cls' => 'bg-slate-100 text-slate-700 border border-slate-200'],
+                                            'guru' => ['label' => 'Guru', 'cls' => 'bg-blue-50 text-blue-700 border border-blue-200'],
+                                            'siswa' => ['label' => 'Siswa', 'cls' => 'bg-blue-50 text-blue-700 border border-blue-200'],
+                                            'ortu' => ['label' => 'Orang Tua', 'cls' => 'bg-slate-100 text-slate-700 border border-slate-200'],
                                         ];
-                                        $role = $roleLabels[$u->role] ?? ['label' => $u->role, 'color' => 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'];
+                                        $role = $roleLabels[$u->role] ?? ['label' => $u->role, 'cls' => 'bg-slate-100 text-slate-600 border border-slate-200'];
                                     @endphp
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $role['color'] }}">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $role['cls'] }}">
                                         {{ $role['label'] }}
                                     </span>
                                 </td>
-                                <td data-label="Aksi" class="px-4 py-3 whitespace-nowrap">
+                                <td class="px-4 py-3.5 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-2">
-                                        <!-- Tombol Edit -->
                                         <button type="button" onclick="openEditModal({{ $u->id }})"
-                                            class="inline-flex items-center px-3 py-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 text-xs font-medium rounded-lg transition-colors">
-                                            <i class="ph ph-pencil mr-1"></i>
+                                            class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 border border-blue-700 transition-colors hover:bg-blue-50">
+                                            <i class="ph ph-pencil"></i>
                                             Edit
                                         </button>
 
-                                        <!-- Reset Password -->
-                                        <form action="{{ route('users.reset-password', $u->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            <button type="submit"
-                                                onclick="return confirm('Reset password user ini menjadi default?')"
-                                                class="inline-flex items-center px-3 py-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 text-xs font-medium rounded-lg transition-colors">
-                                                <i class="ph ph-key mr-1"></i>
-                                                Reset Pass
+                                        @if(auth()->user()->id !== $u->id)
+                                            <button type="button" onclick="openPasswordModal({{ $u->id }}, '{{ addslashes($u->name) }}')"
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 border border-blue-700 transition-colors hover:bg-blue-50">
+                                                <i class="ph ph-key"></i>
+                                                Ganti Pass
                                             </button>
-                                        </form>
+                                        @endif
 
-                                        <!-- Hapus User -->
-                                        <form action="{{ route('users.delete', $u->id) }}" method="POST" class="inline">
+                                        <form action="{{ route('users.delete', $u->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" onclick="return confirm('Yakin ingin menghapus user ini?')"
-                                                class="inline-flex items-center px-3 py-1 bg-rose-100 dark:bg-rose-900/30 hover:bg-rose-200 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-medium rounded-lg transition-colors">
-                                                <i class="ph ph-trash mr-1"></i>
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-rose-600 border border-rose-200 transition-colors hover:bg-rose-50">
+                                                <i class="ph ph-trash"></i>
                                                 Hapus
                                             </button>
                                         </form>
@@ -129,95 +132,301 @@
                     </tbody>
                 </table>
             </div>
+            @if($users->isEmpty())
+                <div class="py-12 text-center">
+                    <i class="ph ph-user-minus text-5xl text-slate-300"></i>
+                    <p class="mt-3 text-sm font-semibold text-slate-600">Tidak ada user ditemukan</p>
+                    <p class="mt-1 text-xs text-slate-400">Coba ubah kata kunci atau filter role.</p>
+                </div>
+            @endif
         </div>
     </div>
 
     <!-- ============================================ -->
     <!-- MODAL EDIT USER                              -->
     <!-- ============================================ -->
-    <div id="editModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 max-h-[90vh] overflow-y-auto">
-            <div
-                class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Edit User</h3>
-                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <i class="ph ph-x text-2xl"></i>
+    <div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-2xl bg-white p-7 shadow-modal max-h-[90vh] overflow-y-auto">
+            <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                        <i class="ph-fill ph-user-pencil text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Edit User</h3>
+                </div>
+                <button onclick="closeEditModal()" class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                    <i class="ph ph-x text-xl"></i>
                 </button>
             </div>
 
-            <form id="editForm" method="POST">
+            <form id="editForm" method="POST" class="space-y-4">
                 @csrf
                 @method('PUT')
 
-                <div class="mb-3">
-                    <label for="edit_name" class="block text-sm font-semibold text-gray-900 dark:text-white mb-1">Nama
-                        Lengkap</label>
-                    <input type="text" name="name" id="edit_name"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        required>
+                <div>
+                    <label for="edit_name" class="label">Nama Lengkap</label>
+                    <input type="text" name="name" id="edit_name" class="input" required>
                 </div>
 
-                <div class="mb-3">
-                    <label for="edit_email"
-                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-1">Email</label>
-                    <input type="email" name="email" id="edit_email"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        required>
+                <div>
+                    <label for="edit_email" class="label">Email</label>
+                    <input type="email" name="email" id="edit_email" class="input" required>
                 </div>
 
-                <div class="mb-4">
-                    <label for="edit_role"
-                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-1">Role</label>
-                    <select name="role" id="edit_role"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        required>
+                <div>
+                    <label for="edit_role" class="label">Role</label>
+                    <select name="role" id="edit_role" class="input" required>
                         <option value="ortu">Orang Tua</option>
                         <option value="guru">Guru</option>
+                        <option value="siswa">Siswa</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                    <i class="ph ph-save"></i>
-                    Update User
+                <div id="edit_ortu_wrap" class="hidden">
+                    <label for="edit_ortu_id" class="label">Orang Tua (Monitoring)</label>
+                    <select name="ortu_id" id="edit_ortu_id" class="input">
+                        <option value="">-- Tidak Terhubung --</option>
+                        @foreach($orangTuaList as $o)
+                            <option value="{{ $o->id }}">{{ $o->user?->name }} ({{ $o->user?->email }})</option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-slate-400">Pilih orang tua agar siswa bisa dimonitoring (absensi, nilai, notifikasi).</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full py-3">
+                    <i class="ph ph-save text-lg"></i>
+                    Simpan Perubahan
                 </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL GANTI PASSWORD                        -->
+    <!-- ============================================ -->
+    <div id="passwordModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-2xl bg-white p-7 shadow-modal">
+            <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                        <i class="ph-fill ph-key text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Ganti Password</h3>
+                        <p class="text-xs text-slate-500" id="passwordUserName"></p>
+                    </div>
+                </div>
+                <button onclick="closePasswordModal()" class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            @if($errors->any())
+                <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
+                    <ul class="list-disc list-inside space-y-1 text-sm text-rose-700">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form id="passwordForm" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label for="password" class="label">Password Baru</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                            <i class="ph ph-lock-simple text-lg text-slate-400"></i>
+                        </div>
+                        <input type="password" name="password" id="password"
+                            class="input pl-11" placeholder="Minimal 6 karakter" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password_confirmation" class="label">Konfirmasi Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                            <i class="ph ph-check-circle text-lg text-slate-400"></i>
+                        </div>
+                        <input type="password" name="password_confirmation" id="password_confirmation"
+                            class="input pl-11" placeholder="Ulangi password baru" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full py-3">
+                    <i class="ph ph-floppy-disk text-lg"></i>
+                    Simpan Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL IMPORT EXCEL SISWA                     -->
+    <!-- ============================================ -->
+    <div id="importModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
+        <div class="w-full max-w-lg rounded-2xl bg-white p-7 shadow-modal max-h-[90vh] overflow-y-auto">
+            <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                        <i class="ph-fill ph-file-csv text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Import Siswa dari Excel</h3>
+                </div>
+                <button onclick="closeImportModal()" class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <form action="{{ route('users.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label for="kelas" class="label">Pilih Kelas</label>
+                    <select name="kelas" id="kelas" class="input" required>
+                        <option value="">-- Pilih Kelas --</option>
+                        <optgroup label="Kelas X">
+                            <option value="X PPLG">X PPLG</option>
+                            <option value="X TJKT">X TJKT</option>
+                            <option value="X ACP">X ACP</option>
+                            <option value="X AKL">X AKL</option>
+                        </optgroup>
+                        <optgroup label="Kelas XI">
+                            <option value="XI PPLG">XI PPLG</option>
+                            <option value="XI TJKT">XI TJKT</option>
+                            <option value="XI ACP">XI ACP</option>
+                            <option value="XI AKL">XI AKL</option>
+                        </optgroup>
+                        <optgroup label="Kelas XII">
+                            <option value="XII PPLG">XII PPLG</option>
+                            <option value="XII TJKT">XII TJKT</option>
+                            <option value="XII ACP">XII ACP</option>
+                            <option value="XII AKL">XII AKL</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="file" class="label">File Excel/CSV</label>
+                    <div class="rounded-xl border-2 border-dashed border-slate-200 p-6 text-center transition-colors hover:border-blue-400 hover:bg-blue-50">
+                        <i class="ph ph-file-csv text-4xl text-slate-300 mb-2 block"></i>
+                        <input type="file" name="file" id="file" accept=".xlsx,.xls,.csv" class="mx-auto w-full max-w-sm" required>
+                        <p class="mt-2 text-xs text-slate-400">Format: .xlsx, .xls, .csv | Maksimal 2MB</p>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <h4 class="mb-2 flex items-center gap-2 text-xs font-bold text-slate-700">
+                        <i class="ph-fill ph-info"></i>
+                        Panduan
+                    </h4>
+                    <ul class="list-inside list-disc space-y-1 text-xs text-slate-500">
+                        <li>Download template, lalu isi kolom <strong>nis</strong> (nomor induk) dan <strong>nama</strong> siswa</li>
+                        <li>Kolom <strong>email_ortu</strong> opsional — isi email akun orang tua agar siswa langsung terhubung untuk monitoring (absensi, nilai, notifikasi)</li>
+                        <li>Email dibuat otomatis: <strong>nis@siswa.com</strong>, password default: <strong>password</strong></li>
+                        <li>NIS yang sudah terdaftar akan di-update datanya (tidak ganda)</li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <button type="submit" class="btn btn-primary flex-1">
+                        <i class="ph ph-upload-simple text-lg"></i>
+                        Upload & Import
+                    </button>
+                    <a href="{{ route('users.template') }}" class="btn btn-outline">
+                        <i class="ph ph-download-simple text-lg"></i>
+                        Download Template
+                    </a>
+                </div>
             </form>
         </div>
     </div>
 
     @push('scripts')
         <script>
+            function openImportModal() {
+                document.getElementById('importModal').classList.remove('hidden');
+                document.getElementById('importModal').classList.add('flex');
+            }
+
+            function closeImportModal() {
+                document.getElementById('importModal').classList.add('hidden');
+                document.getElementById('importModal').classList.remove('flex');
+            }
+
+            document.getElementById('importModal').addEventListener('click', function (e) {
+                if (e.target === this) closeImportModal();
+            });
+        </script>
+
+        <script>
+            function openPasswordModal(id, name) {
+                document.getElementById('passwordUserName').textContent = name;
+                document.getElementById('passwordForm').action = `/admin/users/${id}/password`;
+                document.getElementById('passwordForm').reset();
+                document.getElementById('passwordModal').classList.remove('hidden');
+                document.getElementById('passwordModal').classList.add('flex');
+            }
+
+            function closePasswordModal() {
+                document.getElementById('passwordModal').classList.add('hidden');
+                document.getElementById('passwordModal').classList.remove('flex');
+            }
+
+            document.getElementById('passwordModal').addEventListener('click', function (e) {
+                if (e.target === this) closePasswordModal();
+            });
+        </script>
+
+        <script>
             function openEditModal(id) {
+                document.getElementById('editModal').classList.remove('hidden');
+                document.getElementById('editModal').classList.add('flex');
                 fetch(`/admin/users/${id}/edit`)
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
+                        if (!response.ok) throw new Error('Network response was not ok');
                         return response.json();
                     })
                     .then(data => {
                         document.getElementById('edit_name').value = data.name;
                         document.getElementById('edit_email').value = data.email;
                         document.getElementById('edit_role').value = data.role;
+                        document.getElementById('edit_ortu_id').value = data.ortu_id || '';
                         document.getElementById('editForm').action = `/admin/users/${id}`;
-                        document.getElementById('editModal').classList.remove('hidden');
+                        toggleOrtuField(data.role);
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         alert('Gagal memuat data user. Cek console untuk detail error.');
+                        closeEditModal();
                     });
             }
 
-            function closeEditModal() {
-                document.getElementById('editModal').classList.add('hidden');
+            function toggleOrtuField(role) {
+                const wrap = document.getElementById('edit_ortu_wrap');
+                if (role === 'siswa') {
+                    wrap.classList.remove('hidden');
+                } else {
+                    wrap.classList.add('hidden');
+                }
             }
 
-            // Tutup modal saat klik di luar
+            document.getElementById('edit_role').addEventListener('change', function () {
+                toggleOrtuField(this.value);
+            });
+
+            function closeEditModal() {
+                document.getElementById('editModal').classList.add('hidden');
+                document.getElementById('editModal').classList.remove('flex');
+            }
+
             document.getElementById('editModal').addEventListener('click', function (e) {
-                if (e.target === this) {
-                    closeEditModal();
-                }
+                if (e.target === this) closeEditModal();
             });
         </script>
     @endpush

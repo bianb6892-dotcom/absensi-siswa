@@ -45,6 +45,11 @@ class User extends Authenticatable
         return $this->hasMany(Absensi::class);
     }
 
+    public function nilais()
+    {
+        return $this->hasMany(Nilai::class);
+    }
+
     // Di bagian relasi, tambahkan method untuk cek role
     public function isAdmin()
     {
@@ -54,6 +59,11 @@ class User extends Authenticatable
     public function isGuru()
     {
         return $this->role === 'guru';
+    }
+
+    public function isSiswa()
+    {
+        return $this->role === 'siswa';
     }
 
     public function isOrtu()

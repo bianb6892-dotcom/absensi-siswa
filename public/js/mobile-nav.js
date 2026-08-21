@@ -17,6 +17,26 @@ function closeMobileSidebar() {
 }
 
 // ============================================
+// DESKTOP SIDEBAR - COLLAPSE / EXPAND
+// ============================================
+function toggleNav() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('navOverlay');
+    const mainContent = document.getElementById('mainContent');
+
+    if (!sidebar || !overlay) return;
+
+    if (window.innerWidth <= 768) return;
+
+    const isHidden = sidebar.classList.toggle('hidden');
+    overlay.classList.toggle('active', isHidden);
+
+    if (mainContent) {
+        mainContent.style.marginLeft = isHidden ? '0px' : '264px';
+    }
+}
+
+// ============================================
 // INIT - DESKTOP SIDEBAR TETAP TERBUKA
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -26,6 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth > 768) {
         sidebar.style.display = 'flex';
         sidebar.style.transform = 'translateX(0)';
-        mainContent.style.marginLeft = '280px';
+        mainContent.style.marginLeft = '264px';
     }
 });

@@ -10,16 +10,16 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('absensis', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->date('tanggal');
-        $table->enum('keterangan', ['hadir', 'ijin', 'sakit', 'tidak_masuk']);
-        $table->timestamps();
-        $table->unique(['user_id', 'tanggal']); // mencegah duplikat per hari
-    });
-}
+    {
+        Schema::create('absensis', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->date('tanggal');
+            $table->enum('keterangan', ['hadir', 'ijin', 'sakit', 'tidak_masuk']);
+            $table->timestamps();
+            $table->unique(['user_id', 'tanggal']); // mencegah duplikat per hari
+        });
+    }
 
     /**
      * Reverse the migrations.

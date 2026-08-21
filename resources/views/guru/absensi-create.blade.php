@@ -5,32 +5,31 @@
 @section('content')
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-cv-950 flex items-center gap-2">
-            <i class="ph-fill ph-calendar-check text-cv-500"></i>
-            Input Absensi Harian
-        </h1>
-        <p class="text-charcoal-700 mt-1 text-sm">Catat kehadiran siswa untuk hari ini.</p>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Input Absensi Harian</h1>
+        <p class="mt-1 text-sm text-slate-500">Catat kehadiran siswa dengan cepat dan akurat.</p>
     </div>
-    <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-cv-100 flex items-center gap-3">
-        <div class="bg-cv-50 p-2 rounded-md text-cv-600">
+    <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
             <i class="ph ph-graduation-cap text-xl"></i>
         </div>
         <div>
-            <p class="text-xs text-charcoal-700 font-medium">Kelas Aktif</p>
-            <p class="text-sm font-bold text-cv-950">{{ $kelasTerpilih ?? 'Pilih Kelas' }}</p>
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Kelas Aktif</p>
+            <p class="text-sm font-bold text-slate-900">{{ $kelasTerpilih ?? 'Pilih Kelas' }}</p>
         </div>
     </div>
 </div>
 
-<!-- Tabs: Manual Input & Import Excel -->
+<!-- Tabs -->
 <div class="mb-6">
-    <div class="border-b border-cv-200">
-        <nav class="flex gap-4" aria-label="Tabs">
-            <button onclick="switchTab('manual')" id="tab-manual" class="py-2 px-4 text-sm font-semibold text-cv-600 border-b-2 border-cv-500 transition-all">
-                <i class="ph ph-pencil mr-2"></i>Input Manual
+    <div class="border-b border-slate-200">
+        <nav class="flex gap-2" aria-label="Tabs">
+            <button onclick="switchTab('manual')" id="tab-manual"
+                class="flex items-center gap-2 rounded-t-xl border-b-2 border-blue-700 px-5 py-3 text-sm font-bold text-blue-600 transition-all">
+                <i class="ph ph-pencil-line text-lg"></i>Input Manual
             </button>
-            <button onclick="switchTab('import')" id="tab-import" class="py-2 px-4 text-sm font-medium text-charcoal-700 border-b-2 border-transparent hover:text-cv-600 hover:border-cv-300 transition-all">
-                <i class="ph ph-file-csv mr-2"></i>Import Excel
+            <button onclick="switchTab('import')" id="tab-import"
+                class="flex items-center gap-2 rounded-t-xl border-b-2 border-transparent px-5 py-3 text-sm font-medium text-slate-500 transition-colors hover:text-blue-600">
+                <i class="ph ph-file-csv text-lg"></i>Import Excel
             </button>
         </nav>
     </div>
@@ -38,18 +37,18 @@
 
 <!-- Tab Manual Input -->
 <div id="manual-tab">
-    <div class="bg-white rounded-xl shadow-sm border border-cv-200 overflow-hidden">
-        <div class="p-5 sm:p-6 border-b border-cv-100 bg-gradient-to-r from-cv-50 to-white">
+    <div class="card overflow-hidden">
+        <div class="border-b border-slate-100 bg-white px-6 py-5">
             <div class="flex flex-wrap items-center gap-4">
                 <div class="max-w-md flex-1">
-                    <label for="kelas_absensi" class="block text-sm font-semibold text-cv-900 mb-2">
+                    <label for="kelas_absensi" class="mb-2 block text-sm font-semibold text-slate-700">
                         Pilih Kelas
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="ph ph-graduation-cap text-cv-500 text-lg"></i>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                            <i class="ph ph-graduation-cap text-lg text-slate-400"></i>
                         </div>
-                        <select id="kelas_absensi" class="block w-full pl-10 pr-4 py-2.5 sm:text-sm border border-cv-200 rounded-lg text-charcoal-900 bg-white focus:ring-2 focus:ring-cv-500 focus:border-cv-500 transition-shadow shadow-sm cursor-pointer hover:border-cv-300">
+                        <select id="kelas_absensi" class="input pl-11 pr-10 appearance-none cursor-pointer">
                             <optgroup label="Kelas X">
                                 <option value="X PPLG" {{ $kelasTerpilih == 'X PPLG' ? 'selected' : '' }}>X PPLG</option>
                                 <option value="X TJKT" {{ $kelasTerpilih == 'X TJKT' ? 'selected' : '' }}>X TJKT</option>
@@ -69,18 +68,21 @@
                                 <option value="XII AKL" {{ $kelasTerpilih == 'XII AKL' ? 'selected' : '' }}>XII AKL</option>
                             </optgroup>
                         </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400">
+                            <i class="ph ph-caret-down"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="max-w-md flex-1">
-                    <label for="tanggal_absensi" class="block text-sm font-semibold text-cv-900 mb-2">
+                    <label for="tanggal_absensi" class="mb-2 block text-sm font-semibold text-slate-700">
                         Pilih Tanggal Absensi
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="ph ph-calendar text-cv-500 text-lg"></i>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                            <i class="ph ph-calendar-blank text-lg text-slate-400"></i>
                         </div>
                         <input type="date" id="tanggal_absensi" name="tanggal" value="{{ date('Y-m-d') }}"
-                            class="block w-full pl-10 pr-4 py-2.5 sm:text-sm border border-cv-200 rounded-lg text-charcoal-900 bg-white focus:ring-2 focus:ring-cv-500 focus:border-cv-500 transition-shadow shadow-sm cursor-pointer hover:border-cv-300 relative">
+                            class="input pl-11 cursor-pointer">
                     </div>
                 </div>
             </div>
@@ -90,46 +92,46 @@
             @csrf
             <input type="hidden" name="tanggal" id="tanggal-input" value="{{ date('Y-m-d') }}">
             <input type="hidden" name="kelas" id="kelas-input" value="{{ $kelasTerpilih ?? 'X PPLG' }}">
-            
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-cv-200 hidden md:table">
-                    <thead class="bg-cv-50">
+
+            <div class="table-wrapper">
+                <table class="hidden w-full md:table">
+                    <thead>
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-cv-800 uppercase tracking-wider w-16">No</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-cv-800 uppercase tracking-wider">Nama Siswa</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-cv-800 uppercase tracking-wider">NIS</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-cv-800 uppercase tracking-wider w-64">Status Kehadiran</th>
+                            <th class="w-16 px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 rounded-l-xl bg-slate-50">No</th>
+                            <th class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50">Nama Siswa</th>
+                            <th class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50">NIS</th>
+                            <th class="w-72 px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 rounded-r-xl bg-slate-50">Status Kehadiran</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-cv-100" id="student-table-body">
+                    <tbody class="divide-y divide-slate-100" id="student-table-body">
                         @forelse($siswa as $key => $s)
-                        <tr class="hover:bg-cv-50/50 transition-colors group">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-charcoal-700">{{ $key + 1 }}</td>
+                        <tr class="group transition-colors hover:bg-slate-50/70">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-500">{{ $key + 1 }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="h-10 w-10 rounded-full bg-cv-100 flex items-center justify-center text-cv-700 font-bold border border-cv-200">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-700 font-bold text-white border border-blue-200">
                                         {{ strtoupper(substr($s->name, 0, 2)) }}
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-bold text-charcoal-900">{{ $s->name }}</div>
-                                        <div class="text-xs text-charcoal-700">{{ $s->kelas }}</div>
+                                        <div class="text-sm font-bold text-slate-900">{{ $s->name }}</div>
+                                        <div class="text-xs text-slate-400">{{ $s->kelas }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-charcoal-700">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                                 {{ $s->nis ?? '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="relative">
-                                    <select name="absensi[{{ $s->id }}]" 
-                                        class="status-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-cv-500 focus:border-cv-500 sm:text-sm rounded-md appearance-none bg-white border border-cv-200 shadow-sm cursor-pointer"
+                                    <select name="absensi[{{ $s->id }}]"
+                                        class="status-select input pl-3 pr-10 appearance-none cursor-pointer"
                                         data-student-id="{{ $s->id }}">
-                                        <option value="hadir" selected>✅ Hadir</option>
-                                        <option value="ijin">📝 Ijin</option>
-                                        <option value="sakit">🏥 Sakit</option>
-                                        <option value="tidak_masuk">❌ Tidak Masuk</option>
+                                        <option value="hadir" selected>Hadir</option>
+                                        <option value="ijin">Ijin</option>
+                                        <option value="sakit">Sakit</option>
+                                        <option value="tidak_masuk">Tidak Masuk</option>
                                     </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-charcoal-700">
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
                                         <i class="ph ph-caret-down"></i>
                                     </div>
                                 </div>
@@ -137,9 +139,9 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-charcoal-700">
-                                <i class="ph ph-users text-4xl block mb-2 text-cv-300"></i>
-                                Belum ada data siswa di kelas ini. Silahkan tambahkan siswa terlebih dahulu melalui menu Register.
+                            <td colspan="4" class="px-6 py-12 text-center text-slate-400">
+                                <i class="ph ph-users-three text-5xl block mb-3 text-slate-200"></i>
+                                Belum ada data siswa di kelas ini.
                             </td>
                         </tr>
                         @endforelse
@@ -147,68 +149,66 @@
                 </table>
 
                 <!-- Mobile View -->
-                <div class="md:hidden divide-y divide-cv-100" id="mobile-student-list">
+                <div class="divide-y divide-slate-100 md:hidden" id="mobile-student-list">
                     @forelse($siswa as $key => $s)
-                    <div class="p-4 bg-white hover:bg-cv-50/30 transition-colors">
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-full bg-cv-100 flex items-center justify-center text-cv-700 font-bold border border-cv-200">
-                                    {{ strtoupper(substr($s->name, 0, 2)) }}
-                                </div>
-                                <div>
-                                    <h3 class="text-sm font-bold text-charcoal-900">{{ $key + 1 }}. {{ $s->name }}</h3>
-                                    <p class="text-xs text-charcoal-700">{{ $s->kelas }}</p>
-                                </div>
+                    <div class="bg-white p-4 transition-colors hover:bg-slate-50/70">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-700 font-bold text-white border border-blue-200">
+                                {{ strtoupper(substr($s->name, 0, 2)) }}
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900">{{ $key + 1 }}. {{ $s->name }}</h3>
+                                <p class="text-xs text-slate-400">{{ $s->kelas }}</p>
                             </div>
                         </div>
-                        
-                        <div class="grid grid-cols-4 gap-2 mt-2">
+
+                        <div class="mt-2 grid grid-cols-4 gap-2">
                             <label class="cursor-pointer">
                                 <input type="radio" name="status_m_{{ $s->id }}" value="hadir" class="peer sr-only" checked>
-                                <div class="text-center p-2 rounded-lg border border-cv-200 peer-checked:bg-emerald-100 peer-checked:border-emerald-500 peer-checked:text-emerald-700 text-charcoal-700 transition-all text-xs font-medium">
-                                    <i class="ph ph-check-circle block text-lg mb-1"></i>
+                                <div class="rounded-xl border border-slate-200 p-2 text-center text-xs font-semibold text-slate-600 transition-all peer-checked:border-blue-700 peer-checked:bg-blue-700 peer-checked:text-white">
+                                    <i class="ph-fill ph-check-circle block text-lg mb-1"></i>
                                     Hadir
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="status_m_{{ $s->id }}" value="ijin" class="peer sr-only">
-                                <div class="text-center p-2 rounded-lg border border-cv-200 peer-checked:bg-amber-100 peer-checked:border-amber-500 peer-checked:text-amber-700 text-charcoal-700 transition-all text-xs font-medium">
-                                    <i class="ph ph-envelope block text-lg mb-1"></i>
+                                <div class="rounded-xl border border-slate-200 p-2 text-center text-xs font-semibold text-slate-600 transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700">
+                                    <i class="ph-fill ph-envelope block text-lg mb-1"></i>
                                     Ijin
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="status_m_{{ $s->id }}" value="sakit" class="peer sr-only">
-                                <div class="text-center p-2 rounded-lg border border-cv-200 peer-checked:bg-blue-100 peer-checked:border-blue-500 peer-checked:text-blue-700 text-charcoal-700 transition-all text-xs font-medium">
-                                    <i class="ph ph-first-aid block text-lg mb-1"></i>
+                                <div class="rounded-xl border border-slate-200 p-2 text-center text-xs font-semibold text-slate-600 transition-all peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700">
+                                    <i class="ph-fill ph-first-aid block text-lg mb-1"></i>
                                     Sakit
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="status_m_{{ $s->id }}" value="tidak_masuk" class="peer sr-only">
-                                <div class="text-center p-2 rounded-lg border border-cv-200 peer-checked:bg-rose-100 peer-checked:border-rose-500 peer-checked:text-rose-700 text-charcoal-700 transition-all text-xs font-medium">
-                                    <i class="ph ph-x-circle block text-lg mb-1"></i>
+                                <div class="rounded-xl border border-slate-200 p-2 text-center text-xs font-semibold text-slate-600 transition-all peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700">
+                                    <i class="ph-fill ph-x-circle block text-lg mb-1"></i>
                                     Alpa
                                 </div>
                             </label>
                         </div>
                     </div>
                     @empty
-                    <div class="p-8 text-center text-charcoal-700">
-                        <i class="ph ph-users text-4xl block mb-2 text-cv-300"></i>
+                    <div class="p-8 text-center text-slate-400">
+                        <i class="ph ph-users-three text-5xl block mb-3 text-slate-200"></i>
                         Belum ada data siswa.
                     </div>
                     @endforelse
                 </div>
             </div>
 
-            <div class="px-5 py-4 border-t border-cv-200 bg-cv-50/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 rounded-b-xl">
-                <a href="{{ route('guru.dashboard') }}" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-cv-300 shadow-sm text-sm font-medium rounded-lg text-charcoal-800 bg-white hover:bg-cv-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cv-500 transition-all duration-200">
-                    <i class="ph ph-arrow-left mr-2 text-lg"></i>
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+                <a href="{{ route('guru.dashboard') }}" class="btn btn-outline w-full sm:w-auto">
+                    <i class="ph ph-arrow-left text-lg"></i>
                     Kembali
                 </a>
-                <button type="submit" id="btn-simpan" class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2 border border-transparent shadow-md text-sm font-medium rounded-lg text-white bg-cv-600 hover:bg-cv-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cv-500 transform active:scale-95 transition-all duration-200">
-                    <i class="ph ph-floppy-disk mr-2 text-lg"></i>
+                <button type="submit" id="btn-simpan" class="btn btn-primary w-full sm:w-auto">
+                    <i class="ph ph-floppy-disk text-lg"></i>
                     Simpan Absensi
                 </button>
             </div>
@@ -218,52 +218,22 @@
 
 <!-- Tab Import Excel -->
 <div id="import-tab" class="hidden">
-    <div class="bg-white rounded-xl shadow-sm border border-cv-200 overflow-hidden">
-        <div class="p-5 sm:p-6 border-b border-cv-100 bg-gradient-to-r from-cv-50 to-white">
-            <h2 class="text-lg font-bold text-cv-900 flex items-center gap-2">
-                <i class="ph ph-file-csv text-cv-500"></i>
+    <div class="card overflow-hidden">
+        <div class="border-b border-slate-100 bg-white px-6 py-5">
+            <h2 class="flex items-center gap-2 text-lg font-bold text-slate-900">
+                <i class="ph ph-file-csv text-blue-600"></i>
                 Import Absensi dari Excel/CSV
             </h2>
-            <p class="text-sm text-charcoal-700 mt-1">Upload file Excel/CSV untuk menginput absensi banyak siswa sekaligus.</p>
+            <p class="mt-1 text-sm text-slate-500">Upload file Excel/CSV untuk menginput absensi banyak siswa sekaligus.</p>
         </div>
-        <div class="p-5">
-            @if(session('success'))
-                <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg flex items-center gap-3">
-                    <i class="ph-fill ph-check-circle text-emerald-500 text-xl"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-            @endif
-            
-            @if(session('warning'))
-                <div class="mb-4 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-lg">
-                    <div class="flex items-center gap-3 mb-2">
-                        <i class="ph-fill ph-warning-circle text-amber-500 text-xl"></i>
-                        <span class="font-semibold">{{ session('warning') }}</span>
-                    </div>
-                    @if(session('errors'))
-                        <ul class="list-disc list-inside text-sm space-y-1">
-                            @foreach(session('errors') as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-                </div>
-            @endif
-            
-            @if(session('error'))
-                <div class="mb-4 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-lg flex items-center gap-3">
-                    <i class="ph-fill ph-x-circle text-rose-500 text-xl"></i>
-                    <span>{{ session('error') }}</span>
-                </div>
-            @endif
-            
+        <div class="p-6">
             <form method="POST" action="{{ route('guru.absensi.import') }}" enctype="multipart/form-data">
                 @csrf
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+                <div class="mb-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="import_kelas" class="block text-sm font-semibold text-cv-900 mb-1">Pilih Kelas</label>
-                        <select name="kelas" id="import_kelas" class="w-full px-3 py-2 border border-cv-200 rounded-lg focus:ring-2 focus:ring-cv-500 focus:border-cv-500" required>
+                        <label for="import_kelas" class="label">Pilih Kelas</label>
+                        <select name="kelas" id="import_kelas" class="input" required>
                             <option value="">-- Pilih Kelas --</option>
                             <optgroup label="Kelas X">
                                 <option value="X PPLG" {{ $kelasTerpilih == 'X PPLG' ? 'selected' : '' }}>X PPLG</option>
@@ -285,39 +255,41 @@
                             </optgroup>
                         </select>
                     </div>
-                    
+
                     <div>
-                        <label for="import_tanggal" class="block text-sm font-semibold text-cv-900 mb-1">Tanggal Absensi</label>
-                        <input type="date" name="tanggal" id="import_tanggal" class="w-full px-3 py-2 border border-cv-200 rounded-lg focus:ring-2 focus:ring-cv-500 focus:border-cv-500" value="{{ date('Y-m-d') }}" required>
+                        <label for="import_tanggal" class="label">Tanggal Absensi</label>
+                        <input type="date" name="tanggal" id="import_tanggal"
+                            class="input" value="{{ date('Y-m-d') }}" required>
                     </div>
                 </div>
-                
-                <div class="mb-4">
-                    <label for="file" class="block text-sm font-semibold text-cv-900 mb-1">File Excel/CSV</label>
-                    <div class="border-2 border-dashed border-cv-200 rounded-lg p-6 text-center hover:border-cv-400 transition-colors">
-                        <input type="file" name="file" id="file" accept=".xlsx,.xls,.csv" class="w-full" required>
-                        <p class="text-xs text-charcoal-700 mt-2">Format: .xlsx, .xls, .csv | Maksimal 2MB</p>
+
+                <div class="mb-5">
+                    <label for="file" class="label">File Excel/CSV</label>
+                    <div class="rounded-xl border-2 border-dashed border-slate-200 p-8 text-center transition-colors hover:border-blue-400 hover:bg-blue-50">
+                        <i class="ph ph-upload-simple text-4xl text-slate-300 mb-2 block"></i>
+                        <input type="file" name="file" id="file" accept=".xlsx,.xls,.csv" class="mx-auto w-full max-w-sm" required>
+                        <p class="mt-2 text-xs text-slate-400">Format: .xlsx, .xls, .csv | Maksimal 2MB</p>
                     </div>
                 </div>
-                
+
                 <div class="flex flex-wrap gap-3">
-                    <button type="submit" class="flex-1 bg-cv-600 hover:bg-cv-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                        <i class="ph ph-upload"></i>
+                    <button type="submit" class="btn btn-primary flex-1">
+                        <i class="ph ph-upload text-lg"></i>
                         Upload & Import
                     </button>
-                    <a href="{{ route('guru.absensi.template') }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-200">
-                        <i class="ph ph-download mr-2"></i>
+                    <a href="{{ route('guru.absensi.template') }}" class="btn btn-outline-blue">
+                        <i class="ph ph-download-simple text-lg"></i>
                         Download Template
                     </a>
                 </div>
             </form>
-            
-            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <h4 class="font-semibold text-amber-700 text-sm mb-2 flex items-center gap-2">
+
+            <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <h4 class="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700">
                     <i class="ph-fill ph-info"></i>
                     Panduan Import
                 </h4>
-                <ul class="text-xs text-amber-700 space-y-1 list-disc list-inside">
+                <ul class="list-inside list-disc space-y-1 text-xs text-slate-500">
                     <li>Download template CSV terlebih dahulu</li>
                     <li>Isi kolom <strong>nama</strong> dengan nama siswa (harus sesuai dengan database)</li>
                     <li>Isi kolom <strong>keterangan</strong> dengan: hadir / ijin / sakit / tidak_masuk</li>
@@ -331,40 +303,40 @@
 
 <!-- Summary Stats -->
 <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex items-center gap-3">
-        <div class="p-2 bg-emerald-100 rounded-lg text-emerald-600">
+    <div class="card p-4 flex items-center gap-3">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
             <i class="ph-fill ph-check-circle text-xl"></i>
         </div>
         <div>
-            <p class="text-xs text-charcoal-700 font-medium">Hadir</p>
-            <p class="text-lg font-bold text-emerald-700" id="stat-hadir">{{ $siswa->count() }}</p>
+            <p class="text-xs font-medium text-slate-400">Hadir</p>
+            <p class="text-lg font-extrabold text-slate-900" id="stat-hadir">{{ $siswa->count() }}</p>
         </div>
     </div>
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100 flex items-center gap-3">
-        <div class="p-2 bg-amber-100 rounded-lg text-amber-600">
+    <div class="card p-4 flex items-center gap-3">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
             <i class="ph-fill ph-envelope text-xl"></i>
         </div>
         <div>
-            <p class="text-xs text-charcoal-700 font-medium">Ijin</p>
-            <p class="text-lg font-bold text-amber-700" id="stat-ijin">0</p>
+            <p class="text-xs font-medium text-slate-400">Ijin</p>
+            <p class="text-lg font-extrabold text-slate-900" id="stat-ijin">0</p>
         </div>
     </div>
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 flex items-center gap-3">
-        <div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+    <div class="card p-4 flex items-center gap-3">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
             <i class="ph-fill ph-first-aid text-xl"></i>
         </div>
         <div>
-            <p class="text-xs text-charcoal-700 font-medium">Sakit</p>
-            <p class="text-lg font-bold text-blue-700" id="stat-sakit">0</p>
+            <p class="text-xs font-medium text-slate-400">Sakit</p>
+            <p class="text-lg font-extrabold text-slate-900" id="stat-sakit">0</p>
         </div>
     </div>
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-rose-100 flex items-center gap-3">
-        <div class="p-2 bg-rose-100 rounded-lg text-rose-600">
+    <div class="card p-4 flex items-center gap-3">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
             <i class="ph-fill ph-x-circle text-xl"></i>
         </div>
         <div>
-            <p class="text-xs text-charcoal-700 font-medium">Alpa</p>
-            <p class="text-lg font-bold text-rose-700" id="stat-alpa">0</p>
+            <p class="text-xs font-medium text-slate-400">Alpa</p>
+            <p class="text-lg font-extrabold text-slate-900" id="stat-alpa">0</p>
         </div>
     </div>
 </div>
@@ -377,38 +349,34 @@ function switchTab(tab) {
     const importTab = document.getElementById('import-tab');
     const tabManual = document.getElementById('tab-manual');
     const tabImport = document.getElementById('tab-import');
-    
+
     if (tab === 'manual') {
         manualTab.classList.remove('hidden');
         importTab.classList.add('hidden');
-        tabManual.className = 'py-2 px-4 text-sm font-semibold text-cv-600 border-b-2 border-cv-500 transition-all';
-        tabImport.className = 'py-2 px-4 text-sm font-medium text-charcoal-700 border-b-2 border-transparent hover:text-cv-600 hover:border-cv-300 transition-all';
+        tabManual.className = 'flex items-center gap-2 rounded-t-xl border-b-2 border-blue-700 px-5 py-3 text-sm font-bold text-blue-600 transition-all';
+        tabImport.className = 'flex items-center gap-2 rounded-t-xl border-b-2 border-transparent px-5 py-3 text-sm font-medium text-slate-500 transition-colors hover:text-blue-600';
     } else {
         manualTab.classList.add('hidden');
         importTab.classList.remove('hidden');
-        tabImport.className = 'py-2 px-4 text-sm font-semibold text-cv-600 border-b-2 border-cv-500 transition-all';
-        tabManual.className = 'py-2 px-4 text-sm font-medium text-charcoal-700 border-b-2 border-transparent hover:text-cv-600 hover:border-cv-300 transition-all';
+        tabImport.className = 'flex items-center gap-2 rounded-t-xl border-b-2 border-blue-700 px-5 py-3 text-sm font-bold text-blue-600 transition-all';
+        tabManual.className = 'flex items-center gap-2 rounded-t-xl border-b-2 border-transparent px-5 py-3 text-sm font-medium text-slate-500 transition-colors hover:text-blue-600';
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Pilih Kelas
     const kelasSelect = document.getElementById('kelas_absensi');
     const kelasInput = document.getElementById('kelas-input');
     const importKelas = document.getElementById('import_kelas');
-    
-    // Sync kelas select with import kelas
+
     kelasSelect.addEventListener('change', function() {
         const kelas = this.value;
         kelasInput.value = kelas;
-        // Update import kelas juga
         if (importKelas) {
             importKelas.value = kelas;
         }
-        window.location.href = "{{ url('/absensi/create') }}?kelas=" + encodeURIComponent(kelas);
+        window.location.href = "{{ url('/guru/absensi/create') }}?kelas=" + encodeURIComponent(kelas);
     });
-    
-    // Sync import kelas with kelas select
+
     if (importKelas) {
         importKelas.addEventListener('change', function() {
             const kelas = this.value;
@@ -418,18 +386,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Date
     const dateInput = document.getElementById('tanggal_absensi');
     const dateInputHidden = document.getElementById('tanggal-input');
     const importTanggal = document.getElementById('import_tanggal');
-    
+
     dateInput.addEventListener('change', (e) => {
         dateInputHidden.value = e.target.value;
         if (importTanggal) {
             importTanggal.value = e.target.value;
         }
     });
-    
+
     if (importTanggal) {
         importTanggal.addEventListener('change', (e) => {
             dateInput.value = e.target.value;
@@ -437,13 +404,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Styling for select
     const selects = document.querySelectorAll('.status-select');
-    
+
     const updateSelectStyle = (select) => {
-        select.classList.remove('status-hadir', 'status-izin', 'status-sakit', 'status-alpa', 'status-tidak_masuk');
+        select.classList.remove('badge-hadir', 'badge-ijin', 'badge-sakit', 'badge-tidak');
         const val = select.value;
-        select.classList.add(`status-${val}`);
+        select.classList.add(`badge-${val === 'tidak_masuk' ? 'tidak' : val}`);
         updateStats();
     };
 
@@ -462,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nameParts = e.target.name.split('_');
                 const id = nameParts[2];
                 const val = e.target.value;
-                
+
                 const select = document.querySelector(`.status-select[data-student-id="${id}"]`);
                 if (select) {
                     select.value = val;
@@ -483,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateStats() {
         let counts = { hadir: 0, ijin: 0, sakit: 0, tidak_masuk: 0 };
-        
+
         selects.forEach(s => {
             counts[s.value]++;
         });

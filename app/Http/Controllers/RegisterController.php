@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Imports\UserImport;
+use App\Models\OrangTua;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RegisterController extends Controller
 {
@@ -27,8 +29,8 @@ class RegisterController extends Controller
 
     public function showRegister()
     {
-        // Ambil semua orang tua untuk dropdown
-        $orangTuaList = User::where('role', 'ortu')->orderBy('name')->get();
+        // Ambil semua orang tua (dari tabel orang_tua) untuk dropdown
+        $orangTuaList = OrangTua::with('user')->orderBy('id')->get();
 
         return view('auth.register', [
             'daftarKelas' => $this->daftarKelas,
@@ -43,9 +45,9 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:ortu,guru',
-            'kelas' => 'nullable|string',
-            'ortu_id' => 'nullable|exists:users,id',  // ← Tambahkan ini
+            'role' => 'required|in:ortu,guru,siswa',
+            'kelas' => 'required_if:role,siswa|nullable|string',
+            'ortu_id' => 'nullable|exists:orang_tua,id',  // ← Tambahkan ini
         ]);
 
         $user = User::create([
@@ -57,17 +59,38 @@ class RegisterController extends Controller
             'ortu_id' => $request->ortu_id,  // ← Tambahkan ini
         ]);
 
-        // (Opsional) Login otomatis setelah register
-        Auth::login($user);
+        // Buat data orang tua di tabel orang_tua agar dashboard ortu berfungsi
+        if ($user->role === 'ortu') {
+            OrangTua::create(['user_id' => $user->id]);
+        }
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Registrasi berhasil! Selamat datang ' . $user->name);
+        return redirect()->route('users.index')
+            ->with('success', 'Akun "'.$user->name.'" berhasil dibuat!');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::where('id', '!=', auth()->user()->id)->orderBy('name')->get();
-        return view('admin.users', compact('users'));
+        $query = User::orderBy('name');
+
+        // Filter berdasarkan role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // Filter berdasarkan nama / NIS / email
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('nis', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%');
+            });
+        }
+
+        $users = $query->get();
+        $orangTuaList = OrangTua::with('user')->orderBy('id')->get();
+
+        return view('admin.users', compact('users', 'orangTuaList'));
     }
 
     public function delete($id)
@@ -79,6 +102,7 @@ class RegisterController extends Controller
         }
 
         $user->delete();
+
         return redirect()->route('users.index')
             ->with('success', 'User berhasil dihapus!');
     }
@@ -92,37 +116,44 @@ class RegisterController extends Controller
         }
 
         $request->validate([
-            'role' => 'required|in:admin,siswa',
+            'role' => 'required|in:admin,guru,siswa,ortu',
         ]);
 
         $user->update([
             'role' => $request->role,
         ]);
 
+        $this->syncOrangTua($user);
+
         return redirect()->route('users.index')
             ->with('success', 'Role user berhasil diubah!');
     }
 
-    public function resetPassword($id)
+    public function changePassword(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
         if ($user->id == auth()->user()->id) {
-            return redirect()->back()->with('error', 'Tidak bisa reset password sendiri!');
+            return redirect()->back()->with('error', 'Tidak bisa mengubah password akun sendiri di sini!');
         }
 
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
         $user->update([
-            'password' => Hash::make('password'),
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()->route('users.index')
-            ->with('success', 'Password user berhasil direset menjadi: password');
+            ->with('success', 'Password "'.$user->name.'" berhasil diubah!');
     }
 
     // Method untuk mengambil data user (via AJAX)
     public function edit($id)
     {
         $user = User::findOrFail($id);
+
         return response()->json($user);
     }
 
@@ -133,17 +164,88 @@ class RegisterController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'role' => 'required|in:admin,guru,ortu',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$id,
+            'role' => 'required|in:admin,guru,siswa,ortu',
+            'ortu_id' => 'nullable|exists:orang_tua,id',
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
+            'ortu_id' => $request->ortu_id,
         ]);
+
+        $this->syncOrangTua($user);
 
         return redirect()->route('users.index')
             ->with('success', 'User berhasil diupdate!');
+    }
+
+    // Pastikan data orang_tua selalu sinkron dengan role user
+    private function syncOrangTua(User $user): void
+    {
+        if ($user->role === 'ortu') {
+            if (! OrangTua::where('user_id', $user->id)->exists()) {
+                OrangTua::create(['user_id' => $user->id]);
+            }
+        } else {
+            OrangTua::where('user_id', $user->id)->delete();
+        }
+    }
+
+    // Method untuk import siswa via Excel
+    public function importUsers(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            'kelas' => 'required|string',
+        ]);
+
+        try {
+            $import = new UserImport($request->kelas);
+            Excel::import($import, $request->file('file'));
+
+            $failures = $import->failures();
+
+            if (count($failures) > 0) {
+                $errorMessages = [];
+                foreach ($failures as $failure) {
+                    $errorMessages[] = 'Row '.$failure->row().': '.implode(', ', $failure->errors());
+                }
+
+                return redirect()->route('users.index')
+                    ->with('warning', 'Data berhasil diimport sebagian. Ada beberapa baris yang gagal:')
+                    ->withErrors($errorMessages);
+            }
+
+            return redirect()->route('users.index')
+                ->with('success', 'Semua siswa berhasil diimport!');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')
+                ->with('error', 'Terjadi kesalahan: '.$e->getMessage());
+        }
+    }
+
+    // Download Template Excel Siswa
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_siswa.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['nis', 'nama', 'email_ortu']);
+
+            // Contoh data
+            fputcsv($file, ['2026001', 'Budi Santoso', 'ortu@budi.com']);
+            fputcsv($file, ['2026002', 'Ani Rahayu', '']);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

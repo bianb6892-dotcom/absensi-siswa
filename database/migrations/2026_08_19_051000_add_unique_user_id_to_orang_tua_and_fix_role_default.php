@@ -8,19 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::table('orang_tua', function (Blueprint $table) {
+            $table->unique('user_id');
+        });
+
         Schema::table('users', function (Blueprint $table) {
-            if (! Schema::hasColumn('users', 'kelas')) {
-                $table->string('kelas')->nullable()->after('role');
-            }
+            $table->string('role')->default('siswa')->change();
         });
     }
 
     public function down(): void
     {
+        Schema::table('orang_tua', function (Blueprint $table) {
+            $table->dropUnique(['user_id']);
+        });
+
         Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'kelas')) {
-                $table->dropColumn('kelas');
-            }
+            $table->string('role')->default('ortu')->change();
         });
     }
 };

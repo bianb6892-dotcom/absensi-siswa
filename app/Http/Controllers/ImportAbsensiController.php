@@ -2,38 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Imports\AbsensiImport;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
 
 class ImportAbsensiController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('role:admin');
-    }
-
     public function index()
     {
-        $kelasList = [
-            'X PPLG' => 'X PPLG',
-            'X TJKT' => 'X TJKT',
-            'X ACP' => 'X ACP',
-            'X AKL' => 'X AKL',
-            'XI PPLG' => 'XI PPLG',
-            'XI TJKT' => 'XI TJKT',
-            'XI ACP' => 'XI ACP',
-            'XI AKL' => 'XI AKL',
-            'XII PPLG' => 'XII PPLG',
-            'XII TJKT' => 'XII TJKT',
-            'XII ACP' => 'XII ACP',
-            'XII AKL' => 'XII AKL',
-        ];
-
-        return view('admin.import-absensi', compact('kelasList'));
+        return view('admin.import-absensi');
     }
 
     public function import(Request $request)
@@ -49,15 +26,16 @@ class ImportAbsensiController extends Controller
             Excel::import($import, $request->file('file'));
 
             $failures = $import->failures();
-            
+
             if (count($failures) > 0) {
                 $errorMessages = [];
                 foreach ($failures as $failure) {
-                    $errorMessages[] = "Row {$failure->row()}: " . implode(', ', $failure->errors());
+                    $errorMessages[] = "Row {$failure->row()}: ".implode(', ', $failure->errors());
                 }
+
                 return redirect()->back()
                     ->with('warning', 'Data berhasil diimport sebagian. Ada beberapa data yang gagal:')
-                    ->with('errors', $errorMessages);
+                    ->withErrors($errorMessages);
             }
 
             return redirect()->route('import.absensi')
@@ -65,7 +43,7 @@ class ImportAbsensiController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
     }
 
@@ -77,16 +55,16 @@ class ImportAbsensiController extends Controller
         ];
 
         $columns = ['nama', 'keterangan'];
-        $callback = function() use ($columns) {
+        $callback = function () use ($columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            
+
             // Contoh data
             fputcsv($file, ['Budi Santoso', 'hadir']);
             fputcsv($file, ['Ani Rahayu', 'ijin']);
             fputcsv($file, ['Citra Dewi', 'sakit']);
             fputcsv($file, ['Dedi Firmansyah', 'tidak_masuk']);
-            
+
             fclose($file);
         };
 

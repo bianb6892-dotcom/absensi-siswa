@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -23,10 +23,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Update data dulu sebelum ubah tipe kolom, agar tidak ada nilai yang terpotong
+        DB::statement("UPDATE users SET role = 'siswa' WHERE role = 'guru'");
+
         Schema::table('users', function (Blueprint $table) {
             $table->enum('role', ['admin', 'siswa', 'ortu'])->default('siswa')->change();
         });
-
-        DB::statement("UPDATE users SET role = 'siswa' WHERE role = 'guru'");
     }
 };

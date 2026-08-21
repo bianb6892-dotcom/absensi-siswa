@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class AdminSeeder extends Seeder
 {
@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
     {
         // Cek apakah admin sudah ada
         $admin = User::where('email', 'admin@absensi.com')->first();
-        if (!$admin) {
+        if (! $admin) {
             User::create([
                 'name' => 'Administrator',
                 'email' => 'admin@absensi.com',
@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
 
         // Cek apakah guru sudah ada
         $guru = User::where('email', 'guru@absensi.com')->first();
-        if (!$guru) {
+        if (! $guru) {
             User::create([
                 'name' => 'Guru PPLG',
                 'email' => 'guru@absensi.com',

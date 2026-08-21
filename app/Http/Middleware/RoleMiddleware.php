@@ -8,16 +8,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403, 'Unauthorized. Please login first.');
         }
 
-        $userRole = auth()->user()->role;
-
-        // Cek apakah role user sesuai
-        if ($userRole !== $role) {
+        // Cek apakah role user sesuai (role:admin,guru -> ['admin', 'guru'])
+        if (! in_array(auth()->user()->role, $roles, true)) {
             abort(403, 'Unauthorized access. You do not have permission to access this page.');
         }
 

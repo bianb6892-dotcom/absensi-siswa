@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'gateway' => env('WHATSAPP_GATEWAY', 'fonnte'),
+        'token' => env('WHATSAPP_TOKEN'),
+        'url' => env('WHATSAPP_URL'),
+    ],
+
 ];

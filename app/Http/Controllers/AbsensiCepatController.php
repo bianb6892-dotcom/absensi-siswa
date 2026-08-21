@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Absensi;
-use App\Models\OrangTua;
 use App\Models\Notifikasi;
+use App\Models\User;
+use App\Services\WhatsAppService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AbsensiCepatController extends Controller
@@ -23,7 +23,7 @@ class AbsensiCepatController extends Controller
         $kelasTerpilih = $request->get('kelas', session('kelas_aktif', 'X PPLG'));
         session(['kelas_aktif' => $kelasTerpilih]);
 
-        $siswa = User::where('role', 'guru')
+        $siswa = User::where('role', 'siswa')
             ->where('kelas', $kelasTerpilih)
             ->orderBy('name')
             ->get();
@@ -48,24 +48,37 @@ class AbsensiCepatController extends Controller
             'absensi.*' => 'in:hadir,ijin,sakit,tidak_masuk',
         ]);
 
+        $validIds = User::where('role', 'siswa')
+            ->where('kelas', $request->kelas)
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->all();
+
+        if (array_diff(array_keys($request->absensi), $validIds)) {
+            abort(403, 'Salah satu siswa tidak valid untuk kelas ini.');
+        }
+
         $notifikasiDikirim = 0;
 
-        DB::transaction(function () use ($request, &$notifikasiDikirim) {
+        // Normalisasi tanggal agar cocok dengan format penyimpanan (Y-m-d H:i:s)
+        $tanggal = Carbon::parse($request->tanggal)->format('Y-m-d H:i:s');
+
+        DB::transaction(function () use ($request, $tanggal, &$notifikasiDikirim) {
             foreach ($request->absensi as $userId => $keterangan) {
                 // Simpan absensi
                 $absensi = Absensi::updateOrCreate(
                     [
                         'user_id' => $userId,
                         'kelas' => $request->kelas,
-                        'tanggal' => $request->tanggal
+                        'tanggal' => $tanggal,
                     ],
                     ['keterangan' => $keterangan]
                 );
 
-                // Kirim notifikasi jika ada perubahan
+                // Kirim notifikasi hanya jika status berubah
                 $siswa = User::find($userId);
-                if ($siswa && $siswa->ortu_id) {
-                    $this->kirimNotifikasi($siswa, $keterangan);
+                if ($siswa && $siswa->ortu_id && ($absensi->wasChanged() || $absensi->wasRecentlyCreated)) {
+                    $this->kirimNotifikasi($siswa, $keterangan, $tanggal);
                     $notifikasiDikirim++;
                 }
             }
@@ -82,10 +95,15 @@ class AbsensiCepatController extends Controller
 
     public function hadirkanSemua(Request $request)
     {
+        $request->validate([
+            'kelas' => 'required|string',
+            'tanggal' => 'nullable|date',
+        ]);
+
         $kelas = $request->kelas;
         $tanggal = $request->tanggal ?? Carbon::today()->format('Y-m-d');
 
-        $siswa = User::where('role', 'guru')
+        $siswa = User::where('role', 'siswa')
             ->where('kelas', $kelas)
             ->get();
 
@@ -98,7 +116,7 @@ class AbsensiCepatController extends Controller
                     ->whereDate('tanggal', $tanggal)
                     ->exists();
 
-                if (!$exists) {
+                if (! $exists) {
                     // Buat absensi baru dengan status 'hadir'
                     Absensi::create([
                         'user_id' => $s->id,
@@ -125,7 +143,7 @@ class AbsensiCepatController extends Controller
             ->with('success', $message);
     }
 
-    private function kirimNotifikasi($siswa, $status)
+    private function kirimNotifikasi($siswa, $status, $tanggal)
     {
         $statusLabel = [
             'hadir' => '✅ Hadir',
@@ -134,25 +152,35 @@ class AbsensiCepatController extends Controller
             'tidak_masuk' => '❌ Tidak Masuk',
         ];
 
+        $tanggalCarbon = Carbon::parse($tanggal);
+
         $pesan = "👋 Yth. Orang tua dari {$siswa->name}\n\n";
         $pesan .= "Anak Anda hari ini: {$statusLabel[$status]}\n";
-        $pesan .= "📅 Tanggal: " . Carbon::today()->format('d F Y') . "\n";
+        $pesan .= '📅 Tanggal: '.$tanggalCarbon->format('d F Y')."\n";
         $pesan .= "🏫 Kelas: {$siswa->kelas}\n\n";
-        $pesan .= "Terima kasih telah memantau pendidikan anak Anda. 🙏";
+        $pesan .= 'Terima kasih telah memantau pendidikan anak Anda. 🙏';
+
+        // Kirim via WhatsApp jika nomor orang tua terisi & gateway dikonfigurasi
+        $noWa = $siswa->orangTua?->no_wa;
+        $statusWa = 'pending';
+        if ($noWa) {
+            $statusWa = WhatsAppService::kirim($noWa, $pesan) ? 'terkirim' : 'gagal';
+        }
 
         Notifikasi::create([
             'ortu_id' => $siswa->ortu_id,
             'siswa_id' => $siswa->id,
-            'judul' => "Status Kehadiran - " . Carbon::today()->format('d F Y'),
+            'judul' => 'Status Kehadiran - '.$tanggalCarbon->format('d F Y'),
             'pesan' => $pesan,
-            'status' => 'pending',
+            'status' => $statusWa,
             'jenis' => 'kehadiran',
+            'dikirim_at' => now(),
         ]);
     }
 
     public function getSiswaByKelas($kelas)
     {
-        $siswa = User::where('role', 'guru')
+        $siswa = User::where('role', 'siswa')
             ->where('kelas', $kelas)
             ->orderBy('name')
             ->get(['id', 'name']);

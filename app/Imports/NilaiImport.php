@@ -2,33 +2,33 @@
 
 namespace App\Imports;
 
-use App\Models\Absensi;
+use App\Models\Nilai;
 use App\Models\User;
-use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class AbsensiImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithValidation
+class NilaiImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithValidation
 {
     use SkipsFailures;
 
     protected $kelas;
 
-    protected $tanggal;
+    protected $tahunAjaran;
 
-    public function __construct($kelas, $tanggal)
+    protected $periode;
+
+    public function __construct($kelas, $tahunAjaran, $periode)
     {
         $this->kelas = $kelas;
-        // Normalisasi tanggal agar cocok dengan format penyimpanan (Y-m-d H:i:s)
-        $this->tanggal = Carbon::parse($tanggal)->format('Y-m-d H:i:s');
+        $this->tahunAjaran = $tahunAjaran;
+        $this->periode = $periode;
     }
 
     public function model(array $row)
     {
-        // Cari user berdasarkan nama, kelas, dan pastikan role-nya siswa
         $user = User::where('name', $row['nama'])
             ->where('kelas', $this->kelas)
             ->where('role', 'siswa')
@@ -38,13 +38,15 @@ class AbsensiImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithVali
             return null;
         }
 
-        Absensi::updateOrCreate(
+        Nilai::updateOrCreate(
             [
                 'user_id' => $user->id,
                 'kelas' => $this->kelas,
-                'tanggal' => $this->tanggal,
+                'tahun_ajaran' => $this->tahunAjaran,
+                'periode' => $this->periode,
+                'mata_pelajaran' => $row['mata_pelajaran'],
             ],
-            ['keterangan' => $row['keterangan']]
+            ['nilai' => $row['nilai']]
         );
 
         return null;
@@ -54,7 +56,8 @@ class AbsensiImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithVali
     {
         return [
             'nama' => 'required|string',
-            'keterangan' => 'required|in:hadir,ijin,sakit,tidak_masuk',
+            'mata_pelajaran' => 'required|string',
+            'nilai' => 'required|numeric|between:0,100',
         ];
     }
 
@@ -62,8 +65,10 @@ class AbsensiImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithVali
     {
         return [
             'nama.required' => 'Kolom Nama wajib diisi',
-            'keterangan.required' => 'Kolom Keterangan wajib diisi',
-            'keterangan.in' => 'Keterangan harus: hadir, ijin, sakit, atau tidak_masuk',
+            'mata_pelajaran.required' => 'Kolom Mata Pelajaran wajib diisi',
+            'nilai.required' => 'Kolom Nilai wajib diisi',
+            'nilai.numeric' => 'Nilai harus berupa angka',
+            'nilai.between' => 'Nilai harus antara 0 - 100',
         ];
     }
 }

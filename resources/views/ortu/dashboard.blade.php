@@ -1,313 +1,224 @@
-@extends('layouts.app')
+@extends('layouts.ortu')
 
 @section('title', 'Dashboard Orang Tua')
 
 @section('content')
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <i class="ph-fill ph-users text-primary-500"></i>
-            Dashboard Orang Tua
-        </h1>
-        <p class="text-gray-600 mt-1">Pantau kehadiran anak Anda</p>
-    </div>
-
     @if(empty($data) || count($data) == 0)
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <i class="ph ph-user-circle text-6xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500">Belum ada data anak yang terdaftar.</p>
+        <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-card">
+            <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-50">
+                <i class="ph-fill ph-user-circle text-5xl text-blue-300"></i>
+            </div>
+            <p class="font-bold text-slate-700">Belum ada data anak yang terdaftar.</p>
+            <p class="mt-1 text-sm text-slate-400">Hubungi admin sekolah untuk menautkan data anak Anda.</p>
         </div>
     @else
-        <!-- ============================================ -->
-        <!-- CARD ANAK (TIDAK DIUBAH)                     -->
-        <!-- ============================================ -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- HERO -->
+        <div class="rounded-2xl bg-blue-700 p-6 text-white shadow-lg shadow-blue-900/20">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-100">{{ now()->translatedFormat('l, d F Y') }}</p>
+            <h2 class="mt-1.5 text-2xl font-extrabold leading-snug">Pantau Kehadiran<br>Anak Anda</h2>
+            <div class="mt-4 flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold">
+                    <i class="ph-fill ph-student text-sm"></i>
+                    {{ count($data) }} anak terdaftar
+                </span>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold text-white">
+                    <span class="h-1.5 w-1.5 rounded-full bg-blue-200"></span>
+                    Real-time
+                </span>
+            </div>
+        </div>
+
+        <!-- CARD ANAK -->
+        <div class="mt-6 space-y-5">
             @foreach($data as $item)
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                    <div class="p-5 border-b border-gray-100 bg-gray-50/50">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm">
-                                    {{ strtoupper(substr($item['siswa']->name, 0, 2)) }}
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-gray-900">{{ $item['siswa']->name }}</h3>
-                                    <p class="text-xs text-gray-500">NIS: {{ $item['siswa']->nis ?? '-' }} | Kelas:
-                                        {{ $item['siswa']->kelas }}</p>
-                                </div>
+                <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+                    <div class="flex items-center justify-between gap-3 bg-white p-5">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-700 text-lg font-extrabold text-white">
+                                {{ strtoupper(substr($item['siswa']->name, 0, 2)) }}
                             </div>
-                            @if($item['hari_ini'])
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
-                                        @if($item['hari_ini']->keterangan == 'hadir') bg-emerald-100 text-emerald-700
-                                        @elseif($item['hari_ini']->keterangan == 'ijin') bg-amber-100 text-amber-700
-                                        @elseif($item['hari_ini']->keterangan == 'sakit') bg-blue-100 text-blue-700
-                                        @else bg-rose-100 text-rose-700 @endif">
-                                    {{ ucfirst($item['hari_ini']->keterangan) }}
-                                </span>
-                            @else
-                                <span
-                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                                    Belum Absen
-                                </span>
-                            @endif
+                            <div class="min-w-0">
+                                <h3 class="truncate text-base font-extrabold text-slate-900">{{ $item['siswa']->name }}</h3>
+                                <p class="truncate text-xs font-medium text-slate-400">
+                                    NIS: {{ $item['siswa']->nis ?? '-' }} · Kelas {{ $item['siswa']->kelas }}
+                                </p>
+                            </div>
                         </div>
+                        @if($item['hari_ini'])
+                            <span class="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold
+                                @if($item['hari_ini']->keterangan == 'hadir') badge-hadir
+                                @elseif($item['hari_ini']->keterangan == 'ijin') badge-ijin
+                                @elseif($item['hari_ini']->keterangan == 'sakit') badge-sakit
+                                @else badge-tidak @endif">
+                                <span class="h-1.5 w-1.5 rounded-full
+                                    @if($item['hari_ini']->keterangan == 'hadir') bg-blue-700
+                                    @elseif($item['hari_ini']->keterangan == 'ijin') bg-amber-500
+                                    @elseif($item['hari_ini']->keterangan == 'sakit') bg-sky-500
+                                    @else bg-rose-500 @endif"></span>
+                                {{ ucfirst($item['hari_ini']->keterangan) }}
+                            </span>
+                        @else
+                            <span class="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-400">
+                                <span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span>
+                                Belum Absen
+                            </span>
+                        @endif
                     </div>
+
                     <div class="p-5">
-                        <div class="grid grid-cols-4 gap-2 text-center">
-                            <div class="bg-emerald-50 rounded-lg p-2">
-                                <p class="text-lg font-bold text-emerald-600">{{ $item['hadir'] }}</p>
-                                <p class="text-xs text-gray-500">Hadir</p>
+                        <div class="grid grid-cols-4 gap-2.5">
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                                <i class="ph-fill ph-check-circle text-base text-blue-600"></i>
+                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['hadir'] }}</p>
+                                <p class="text-[11px] font-bold text-slate-400">Hadir</p>
                             </div>
-                            <div class="bg-amber-50 rounded-lg p-2">
-                                <p class="text-lg font-bold text-amber-600">{{ $item['ijin'] }}</p>
-                                <p class="text-xs text-gray-500">Izin</p>
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                                <i class="ph-fill ph-envelope text-base text-amber-500"></i>
+                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['ijin'] }}</p>
+                                <p class="text-[11px] font-bold text-slate-400">Izin</p>
                             </div>
-                            <div class="bg-blue-50 rounded-lg p-2">
-                                <p class="text-lg font-bold text-blue-600">{{ $item['sakit'] }}</p>
-                                <p class="text-xs text-gray-500">Sakit</p>
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                                <i class="ph-fill ph-first-aid text-base text-sky-500"></i>
+                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['sakit'] }}</p>
+                                <p class="text-[11px] font-bold text-slate-400">Sakit</p>
                             </div>
-                            <div class="bg-rose-50 rounded-lg p-2">
-                                <p class="text-lg font-bold text-rose-600">{{ $item['alpa'] }}</p>
-                                <p class="text-xs text-gray-500">Alpa</p>
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                                <i class="ph-fill ph-x-circle text-base text-rose-500"></i>
+                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['alpa'] }}</p>
+                                <p class="text-[11px] font-bold text-slate-400">Alpa</p>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <a href="{{ route('ortu.anak', $item['siswa']->id) }}"
-                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all duration-200">
-                                <i class="ph ph-eye mr-2"></i>
-                                Lihat Detail
-                            </a>
-                        </div>
+                        <a href="{{ route('ortu.anak', $item['siswa']->id) }}"
+                            class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800">
+                            <i class="ph ph-eye text-lg"></i>
+                            Lihat Detail Kehadiran
+                        </a>
                     </div>
                 </div>
             @endforeach
         </div>
 
-        <!-- ============================================ -->
-        <!-- TABEL REKAP BULANAN (RESPONSIF)              -->
-        <!-- ============================================ -->
+        <!-- NOTIFIKASI -->
+        @if(isset($notifikasi) && $notifikasi->count() > 0)
         <div class="mt-8">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">📊 Rekap Kehadiran Bulanan</h2>
-            <div
-                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div class="p-3 sm:p-5">
-                    <!-- DESKTOP: Tabel normal -->
-                    <div class="hidden md:block">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 dark:bg-gray-700/50 rounded-xl">
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider rounded-l-xl">
-                                        No.</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                        Bulan</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                        Hadir</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                        Izin</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider rounded-r-xl">
-                                        Sakit</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @php
-                                    $firstChild = $data[0]['siswa'] ?? null;
-                                @endphp
-                                @foreach($bulanList as $bulan)
-                                    @php
-                                        $hadir = 0;
-                                        $ijin = 0;
-                                        $sakit = 0;
-                                        if ($firstChild && isset($rekapBulanan[$firstChild->id][$bulan])) {
-                                            $hadir = $rekapBulanan[$firstChild->id][$bulan]['hadir'];
-                                            $ijin = $rekapBulanan[$firstChild->id][$bulan]['ijin'];
-                                            $sakit = $rekapBulanan[$firstChild->id][$bulan]['sakit'];
-                                        }
-                                    @endphp
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                                            {{ $loop->iteration }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $bulan }}</td>
-                                        <td
-                                            class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                                            {{ $hadir }}</td>
-                                        <td
-                                            class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium text-amber-600 dark:text-amber-400">
-                                            {{ $ijin }}</td>
-                                        <td
-                                            class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium text-blue-600 dark:text-blue-400">
-                                            {{ $sakit }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- MOBILE: Card/Block (tanpa overflow) -->
-                    <!-- MOBILE: Card/Block (tanpa nomor) -->
-                    <div class="md:hidden space-y-3">
-                        @php
-                            $firstChild = $data[0]['siswa'] ?? null;
-                        @endphp
-                        @foreach($bulanList as $bulan)
-                            @php
-                                $hadir = 0;
-                                $ijin = 0;
-                                $sakit = 0;
-                                $alpa = 0;
-                                if ($firstChild && isset($rekapBulanan[$firstChild->id][$bulan])) {
-                                    $hadir = $rekapBulanan[$firstChild->id][$bulan]['hadir'];
-                                    $ijin = $rekapBulanan[$firstChild->id][$bulan]['ijin'];
-                                    $sakit = $rekapBulanan[$firstChild->id][$bulan]['sakit'];
-                                    $alpa = $rekapBulanan[$firstChild->id][$bulan]['alpa'];
-                                }
-                            @endphp
-                            <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-bold text-gray-900 dark:text-white">{{ $bulan }}</span>
-                                    <div class="flex gap-2 text-xs">
-                                        <span class="font-medium text-emerald-600 dark:text-emerald-400">hadir {{ $hadir }}</span>
-                                        <span class="font-medium text-amber-600 dark:text-amber-400">ijin {{ $ijin }}</span>
-                                        <span class="font-medium text-blue-600 dark:text-blue-400">sakit {{ $sakit }}</span>
-                                        <span class="font-medium text-rose-600 dark:text-rose-400">alpa {{ $alpa }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+            <div class="mb-3 flex items-center gap-3 px-1">
+                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                    <i class="ph-fill ph-bell-ringing text-xl"></i>
                 </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-slate-900">Notifikasi</h2>
+                    <p class="text-xs text-slate-400">Informasi terbaru dari sekolah</p>
+                </div>
+            </div>
+            <div class="space-y-3">
+                @foreach($notifikasi as $n)
+                    <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-card">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white">
+                            <i class="ph-fill ph-bell text-base"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-sm font-extrabold text-slate-900">{{ $n->judul }}</h3>
+                            <p class="mt-0.5 text-xs text-slate-500">{{ $n->pesan }}</p>
+                            <p class="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                {{ $n->siswa->name ?? 'Anak Anda' }} ·
+                                {{ $n->dikirim_at ? $n->dikirim_at->diffForHumans() : $n->created_at->diffForHumans() }}
+                            </p>
+                        </div>
+                        @if($n->status === 'pending')
+                            <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-500"></span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- REKAP BULANAN -->
+        <div class="mt-8">
+            <div class="mb-3 flex items-center gap-3 px-1">
+                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                    <i class="ph-fill ph-chart-bar text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-slate-900">Rekap Bulanan</h2>
+                    <p class="text-xs text-slate-400">Ringkasan 1 tahun terakhir</p>
+                </div>
+            </div>
+            <div class="space-y-3">
+                @php
+                    $firstChild = $data[0]['siswa'] ?? null;
+                @endphp
+                @foreach($bulanList as $bulan)
+                    @php
+                        $hadir = 0;
+                        $ijin = 0;
+                        $sakit = 0;
+                        $alpa = 0;
+                        if ($firstChild && isset($rekapBulanan[$firstChild->id][$bulan])) {
+                            $hadir = $rekapBulanan[$firstChild->id][$bulan]['hadir'];
+                            $ijin = $rekapBulanan[$firstChild->id][$bulan]['ijin'];
+                            $sakit = $rekapBulanan[$firstChild->id][$bulan]['sakit'];
+                            $alpa = $rekapBulanan[$firstChild->id][$bulan]['alpa'];
+                        }
+                    @endphp
+                    <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-card">
+                        <span class="text-sm font-extrabold text-slate-900">{{ $bulan }}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700">H {{ $hadir }}</span>
+                            <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700">I {{ $ijin }}</span>
+                            <span class="rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-sky-700">S {{ $sakit }}</span>
+                            <span class="rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700">A {{ $alpa }}</span>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- GALLERY PREVIEW (3 CARD + 1 TOMBOL)          -->
-        <!-- ============================================ -->
+        <!-- GALLERY PREVIEW -->
+        @php
+            $galleryPreview = collect()
+                ->merge(isset($kegiatan) ? $kegiatan->take(4) : collect())
+                ->merge(isset($jurusan) ? $jurusan->take(4) : collect())
+                ->merge(isset($eskul) ? $eskul->take(4) : collect())
+                ->take(6);
+        @endphp
         <div class="mt-8">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">🖼️ Gallery Sekolah</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- CARD GALLERY KEGIATAN -->
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
-                    <div
-                        class="p-4 bg-gradient-to-r from-blue-500/10 to-blue-500/5 border-b border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xl">📸</span>
-                            <h3 class="font-bold text-gray-900 dark:text-white">Gallery Kegiatan</h3>
-                        </div>
+            <div class="mb-3 flex items-center justify-between px-1">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                        <i class="ph-fill ph-images text-xl"></i>
                     </div>
-                    <div class="p-4">
-                        @if(isset($kegiatan) && $kegiatan->count() > 0)
-                            <div class="space-y-3">
-                                @foreach($kegiatan->take(3) as $item)
-                                    <div class="flex items-center gap-3">
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
-                                            class="w-14 h-14 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900 dark:text-white text-sm">{{ $item->title }}</h4>
-                                            @if($item->category)
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $item->category }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                                @if($kegiatan->count() > 3)
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">+{{ $kegiatan->count() - 3 }} foto lainnya</p>
-                                @endif
-                            </div>
-                        @else
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada foto kegiatan.</p>
-                        @endif
+                    <div>
+                        <h2 class="text-base font-extrabold text-slate-900">Gallery Sekolah</h2>
+                        <p class="text-xs text-slate-400">Momen kegiatan siswa</p>
                     </div>
                 </div>
-
-                <!-- CARD GALLERY JURUSAN -->
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
-                    <div
-                        class="p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 border-b border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xl">🏫</span>
-                            <h3 class="font-bold text-gray-900 dark:text-white">Gallery Jurusan</h3>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        @if(isset($jurusan) && $jurusan->count() > 0)
-                            <div class="space-y-3">
-                                @foreach($jurusan->take(3) as $item)
-                                    <div class="flex items-center gap-3">
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
-                                            class="w-14 h-14 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900 dark:text-white text-sm">{{ $item->title }}</h4>
-                                            @if($item->category)
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $item->category }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                                @if($jurusan->count() > 3)
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">+{{ $jurusan->count() - 3 }} foto lainnya</p>
-                                @endif
-                            </div>
-                        @else
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada foto jurusan.</p>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- CARD GALLERY EKSKUL -->
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
-                    <div
-                        class="p-4 bg-gradient-to-r from-purple-500/10 to-purple-500/5 border-b border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xl">⚽</span>
-                            <h3 class="font-bold text-gray-900 dark:text-white">Gallery Ekstrakurikuler</h3>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        @if(isset($eskul) && $eskul->count() > 0)
-                            <div class="space-y-3">
-                                @foreach($eskul->take(3) as $item)
-                                    <div class="flex items-center gap-3">
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
-                                            class="w-14 h-14 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900 dark:text-white text-sm">{{ $item->title }}</h4>
-                                            @if($item->category)
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $item->category }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                                @if($eskul->count() > 3)
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">+{{ $eskul->count() - 3 }} foto lainnya</p>
-                                @endif
-                            </div>
-                        @else
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada foto ekstrakurikuler.</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- ============================================ -->
-            <!-- 1 TOMBOL LIHAT SELENGKAPNYA (BAWAH CARD)     -->
-            <!-- ============================================ -->
-            <div class="text-center mt-6">
-                <a href="{{ route('school.dashboard') }}"
-                    class="inline-flex items-center px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">
-                    <i class="ph ph-images mr-2"></i>
-                    Lihat Selengkapnya Gallery
-                    <i class="ph ph-arrow-right ml-2"></i>
+                <a href="{{ route('school.dashboard') }}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-600">
+                    Lihat Semua <i class="ph ph-arrow-right text-sm"></i>
                 </a>
             </div>
+            @if($galleryPreview->count() > 0)
+                <div class="gallery-scroll no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+                    @foreach($galleryPreview as $g)
+                        <a href="{{ route('school.dashboard') }}"
+                            class="relative h-36 w-44 shrink-0 overflow-hidden rounded-2xl border border-slate-200 shadow-card">
+                            <img src="{{ asset('storage/' . $g->image) }}" alt="{{ $g->title }}"
+                                class="h-full w-full object-cover transition-transform duration-300 hover:scale-105">
+                            <div class="absolute inset-x-0 bottom-0 bg-slate-900/60 p-2.5 pt-8">
+                                <p class="truncate text-xs font-bold text-white">{{ $g->title }}</p>
+                                @if($g->category)
+                                    <p class="text-[10px] font-medium text-blue-200">{{ ucfirst($g->category) }}</p>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
+                    <i class="ph ph-images text-3xl text-slate-300"></i>
+                    <p class="mt-2 text-sm text-slate-400">Belum ada foto di gallery.</p>
+                </div>
+            @endif
         </div>
     @endif
 @endsection

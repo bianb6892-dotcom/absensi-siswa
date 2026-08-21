@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Gallery;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
@@ -43,7 +43,7 @@ class GalleryController extends Controller
                 'Menyediakan pendidikan berkualitas yang berorientasi pada kebutuhan industri',
                 'Mengembangkan potensi siswa secara holistik (akademik, karakter, dan keterampilan)',
                 'Membangun kemitraan dengan dunia usaha dan industri',
-                'Menciptakan lingkungan belajar yang inklusif dan menyenangkan'
+                'Menciptakan lingkungan belajar yang inklusif dan menyenangkan',
             ],
             'fasilitas' => [
                 'Laboratorium Komputer Modern',
@@ -51,14 +51,14 @@ class GalleryController extends Controller
                 'Ruang Praktik Standar Industri',
                 'Area Olahraga Terpadu',
                 'Ruang Multimedia',
-                'Wi-Fi Area'
+                'Wi-Fi Area',
             ],
             'prestasi' => [
                 'Juara 1 Lomba Web Design Tingkat Nasional',
                 'Sekolah Adiwiyata Mandiri',
                 'Mitra 50+ Perusahaan Multinasional',
-                'Juara Umum OSN 2025'
-            ]
+                'Juara Umum OSN 2025',
+            ],
         ];
 
         return view('school.dashboard', compact('galleries', 'jurusan', 'eskul', 'kegiatan', 'informasi'));
@@ -68,6 +68,7 @@ class GalleryController extends Controller
     public function manage()
     {
         $galleries = Gallery::orderBy('created_at', 'desc')->get();
+
         return view('admin.gallery-manage', compact('galleries'));
     }
 
@@ -135,7 +136,7 @@ class GalleryController extends Controller
     {
         $gallery = Gallery::findOrFail($id);
         $gallery->update([
-            'is_active' => !$gallery->is_active
+            'is_active' => ! $gallery->is_active,
         ]);
 
         return redirect()->route('gallery.manage')
@@ -161,6 +162,7 @@ class GalleryController extends Controller
     public function edit($id)
     {
         $gallery = Gallery::findOrFail($id);
+
         return response()->json($gallery);
     }
 }

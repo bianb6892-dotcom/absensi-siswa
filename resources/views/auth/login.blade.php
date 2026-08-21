@@ -5,89 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Absensi Siswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        cv: {
-                            50: '#f5f3fa', 100: '#ebe6f3', 200: '#dcd3e9',
-                            300: '#c2b3d9', 400: '#a38bc4', 500: '#8765af',
-                            600: '#714d97', 700: '#5e3f7f', 800: '#4e3568',
-                            900: '#412d55', 950: '#2b1b3b',
-                        }
-                    }
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'] },
+                    boxShadow: {
+                        card: '0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px -4px rgba(15, 23, 42, 0.08)',
+                    },
                 }
             }
         }
     </script>
+    <style type="text/tailwindcss">
+        body {
+            background: #F8FAFC;
+        }
+
+        .btn {
+            @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors;
+        }
+        .btn-primary {
+            @apply bg-blue-700 text-white shadow-sm hover:bg-blue-800;
+        }
+        .input {
+            @apply w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15;
+        }
+        .label {
+            @apply mb-1.5 block text-sm font-semibold text-slate-700;
+        }
+        .input.pl-11 {
+            padding-left: 2.75rem;
+        }
+    </style>
 </head>
-<body class="bg-cv-50 font-sans antialiased min-h-screen flex items-center justify-center">
-    <div class="w-full max-w-md px-4">
-        <div class="bg-white rounded-2xl shadow-xl border border-cv-200 p-8">
-            <div class="text-center mb-8">
-                <div class="bg-cv-500 text-white p-3 rounded-2xl inline-block mb-4">
-                    <i class="ph ph-student text-4xl"></i>
+<body class="font-sans antialiased min-h-screen flex">
+
+    <!-- ===== PANEL BRANDING (DESKTOP) ===== -->
+    <div class="hidden lg:flex w-[45%] xl:w-[40%] relative overflow-hidden bg-slate-900">
+        <div class="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="absolute bottom-0 -left-24 h-80 w-80 rounded-full bg-blue-400/20 blur-3xl"></div>
+
+        <div class="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">
+            <div class="flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-700 shadow-lg">
+                    <i class="ph-fill ph-student text-2xl"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-cv-950">Login Absensi Siswa</h1>
-                <p class="text-charcoal-700 text-sm mt-1">Masuk untuk melanjutkan</p>
+                <div>
+                    <p class="text-lg font-extrabold text-white leading-tight">Absensi Siswa</p>
+                    <p class="text-xs font-medium text-blue-200">SMK Digital Nusantara</p>
+                </div>
             </div>
-            
-            @if($errors->any())
-                <div class="mb-4 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-lg flex items-center gap-3">
-                    <i class="ph-fill ph-warning-circle text-rose-500 text-xl"></i>
-                    <span>{{ $errors->first() }}</span>
-                </div>
-            @endif
-            
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-semibold text-cv-900 mb-2">Email</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="ph ph-envelope text-cv-400"></i>
-                        </div>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" 
-                            class="block w-full pl-10 pr-4 py-2.5 border border-cv-200 rounded-lg text-charcoal-900 bg-white focus:ring-2 focus:ring-cv-500 focus:border-cv-500 transition-shadow shadow-sm"
-                            placeholder="Masukkan email" required autofocus>
-                    </div>
-                </div>
-                
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-semibold text-cv-900 mb-2">Password</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="ph ph-lock text-cv-400"></i>
-                        </div>
-                        <input type="password" name="password" id="password" 
-                            class="block w-full pl-10 pr-4 py-2.5 border border-cv-200 rounded-lg text-charcoal-900 bg-white focus:ring-2 focus:ring-cv-500 focus:border-cv-500 transition-shadow shadow-sm"
-                            placeholder="Masukkan password" required>
-                    </div>
-                </div>
-                
-                <button type="submit" class="w-full bg-cv-600 hover:bg-cv-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                    <i class="ph ph-sign-in"></i>
-                    Login
-                </button>
-            </form>
-            
-            <div class="mt-6 text-center">
-                <p class="text-sm text-charcoal-700">Belum punya akun? <a href="{{ route('register.show') }}" class="text-cv-600 hover:text-cv-700 font-semibold">Register disini</a></p>
-            </div>
-            
-            <hr class="my-6 border-cv-200">
-            
-            <div class="text-center">
-                <p class="text-xs text-charcoal-700">
-                    <strong>Akun Demo:</strong><br>
-                    Admin: admin@absensi.com / password<br>
-                    Siswa: budi@siswa.com / password
+
+            <div>
+                <h1 class="text-3xl xl:text-4xl font-extrabold text-white leading-tight">
+                    Kelola kehadiran siswa<br>lebih mudah &amp; efisien
+                </h1>
+                <p class="mt-4 text-blue-100/90 text-sm xl:text-base max-w-md leading-relaxed">
+                    Sistem absensi digital untuk memantau kehadiran, nilai, dan kegiatan sekolah secara real-time.
                 </p>
+                <div class="mt-8 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                            <i class="ph-fill ph-clock-counter-clockwise text-sm"></i>
+                        </div>
+                        <p class="text-sm text-blue-50">Absensi harian yang cepat &amp; akurat</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                            <i class="ph-fill ph-graduation-cap text-sm"></i>
+                        </div>
+                        <p class="text-sm text-blue-50">Pantau nilai &amp; rekap kehadiran siswa</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                            <i class="ph-fill ph-bell-ringing text-sm"></i>
+                        </div>
+                        <p class="text-sm text-blue-50">Notifikasi otomatis untuk orang tua</p>
+                    </div>
+                </div>
             </div>
+
+            <p class="text-xs text-blue-200/70">&copy; {{ date('Y') }} SMK Digital Nusantara</p>
+        </div>
+    </div>
+
+    <!-- ===== FORM LOGIN ===== -->
+    <div class="flex flex-1 items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md">
+            <div class="lg:hidden flex items-center justify-center gap-3 mb-8">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 text-white shadow-lg shadow-blue-700/30">
+                    <i class="ph-fill ph-student text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-lg font-extrabold text-slate-900 leading-tight">Absensi Siswa</p>
+                    <p class="text-xs font-medium text-slate-500">SMK Digital Nusantara</p>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-8 sm:p-10 shadow-card">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Selamat Datang</h2>
+                    <p class="text-sm text-slate-500 mt-1.5">Masuk ke portal untuk melanjutkan</p>
+                </div>
+
+                @if($errors->any())
+                    <div class="mb-5 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
+                        <i class="ph-fill ph-warning-circle text-xl text-rose-500"></i>
+                        <span class="text-sm font-medium text-rose-700">{{ $errors->first() }}</span>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                    @csrf
+                    <div>
+                        <label for="login" class="label">NIS / Email</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                <i class="ph ph-identification-card text-lg text-slate-400"></i>
+                            </div>
+                            <input type="text" name="login" id="login" value="{{ old('login') }}"
+                                class="input pl-11" placeholder="Masukkan NIS atau email" required autofocus>
+                        </div>
+                        <p class="mt-1.5 text-xs text-slate-400">Orang tua: gunakan NIS anak Anda untuk login</p>
+                    </div>
+
+                    <div>
+                        <label for="password" class="label">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                <i class="ph ph-lock-simple text-lg text-slate-400"></i>
+                            </div>
+                            <input type="password" name="password" id="password"
+                                class="input pl-11" placeholder="Masukkan password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full py-3">
+                        <i class="ph ph-sign-in text-lg"></i>
+                        Masuk Sekarang
+                    </button>
+                </form>
+            </div>
+
+            <p class="mt-6 text-center text-xs text-slate-400">
+                &copy; {{ date('Y') }} SMK Digital Nusantara &middot; Sistem Absensi Siswa
+            </p>
         </div>
     </div>
 </body>

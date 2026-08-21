@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('galleries', function (Blueprint $table) {
-            if (!Schema::hasColumn('galleries', 'type')) {
+            if (! Schema::hasColumn('galleries', 'type')) {
                 $table->enum('type', ['kegiatan', 'jurusan', 'eskul'])->default('kegiatan')->after('category');
             }
         });

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Absensi;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class AbsensiSeeder extends Seeder
 {
@@ -15,15 +15,28 @@ class AbsensiSeeder extends Seeder
     public function run(): void
     {
         // Ambil semua user dengan role siswa
-        $siswaIds = User::where('role', 'siswa')->pluck('id');
-        
-        // Buat data absensi untuk bulan Juli 2026 (seperti di gambar)
-        $tanggalMulai = Carbon::create(2026, 7, 1);
-        $tanggalSelesai = Carbon::create(2026, 7, 31);
-        
-        foreach ($siswaIds as $id) {
+        $siswa = User::where('role', 'siswa')->whereNotNull('kelas')->get();
+
+        if ($siswa->isEmpty()) {
+            $this->command->warn('Tidak ada siswa (role siswa dengan kelas). Seeder absensi dilewati.');
+
+            return;
+        }
+
+        // Buat data absensi untuk bulan berjalan (agar terlihat di rekap dashboard)
+        $tanggalMulai = Carbon::now()->startOfMonth();
+        $tanggalSelesai = Carbon::now()->endOfMonth();
+
+        foreach ($siswa as $s) {
             $tanggal = clone $tanggalMulai;
             while ($tanggal <= $tanggalSelesai) {
+                // Skip hari Minggu (libur)
+                if ($tanggal->dayOfWeek === Carbon::SUNDAY) {
+                    $tanggal->addDay();
+
+                    continue;
+                }
+
                 // Random status, dengan peluang lebih besar untuk hadir
                 $random = rand(1, 10);
                 if ($random <= 7) {
@@ -35,15 +48,20 @@ class AbsensiSeeder extends Seeder
                 } else {
                     $keterangan = 'tidak_masuk';
                 }
-                
-                Absensi::create([
-                    'user_id' => $id,
-                    'tanggal' => $tanggal->format('Y-m-d'),
-                    'keterangan' => $keterangan,
-                ]);
-                
+
+                Absensi::updateOrCreate(
+                    [
+                        'user_id' => $s->id,
+                        'kelas' => $s->kelas,
+                        'tanggal' => $tanggal->format('Y-m-d'),
+                    ],
+                    ['keterangan' => $keterangan]
+                );
+
                 $tanggal->addDay();
             }
         }
+
+        $this->command->info('Absensi berhasil di-seed untuk bulan '.$tanggalMulai->translatedFormat('F Y'));
     }
 }
