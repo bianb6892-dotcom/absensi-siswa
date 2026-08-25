@@ -225,7 +225,7 @@
                     <a href="{{ route('absensi.create') }}" class="nav-item {{ request()->routeIs('absensi.create') || request()->routeIs('absensi.store') ? 'active' : '' }}">
                         <span class="icon"><i class="ph ph-clipboard-text"></i></span><span class="label">Input Absensi</span>
                     </a>
-                    <a href="{{ route('absensi.index') }}" class="nav-item {{ request()->is('admin/absensi') || request()->is('admin/absensi/*') ? 'active' : '' }}">
+                    <a href="{{ route('absensi.index') }}" class="nav-item {{ request()->routeIs('absensi.index') || request()->routeIs('absensi.show') ? 'active' : '' }}">
                         <span class="icon"><i class="ph ph-clock-counter-clockwise"></i></span><span class="label">Riwayat Absensi</span>
                     </a>
                     <a href="{{ route('import.absensi') }}" class="nav-item {{ request()->routeIs('import.*') ? 'active' : '' }}">
@@ -248,7 +248,7 @@
                         <span class="icon"><i class="ph ph-clipboard-text"></i></span><span class="label">Input Absensi</span>
                     </a>
                     <a href="{{ route('guru.absensi.index') }}"
-                        class="nav-item {{ request()->routeIs('guru.absensi.index') || request()->is('guru/absensi') || request()->is('guru/absensi/*') ? 'active' : '' }}">
+                        class="nav-item {{ request()->routeIs('guru.absensi.index') || request()->routeIs('guru.absensi.show') ? 'active' : '' }}">
                         <span class="icon"><i class="ph ph-clock-counter-clockwise"></i></span><span class="label">Riwayat Absensi</span>
                     </a>
                     <a href="{{ route('absensi.cepat') }}" class="nav-item {{ request()->routeIs('absensi.cepat*') ? 'active' : '' }}">
@@ -262,6 +262,11 @@
                     <a href="{{ route('guru.nilai.index', 'akhir-semester') }}"
                         class="nav-item {{ request()->is('guru/nilai/akhir-semester*') ? 'active' : '' }}">
                         <span class="icon"><i class="ph ph-books"></i></span><span class="label">Nilai Akhir Semester</span>
+                    </a>
+                    <p class="nav-section">Keuangan</p>
+                    <a href="{{ route('guru.tunggakan.index') }}"
+                        class="nav-item {{ request()->routeIs('guru.tunggakan.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="ph ph-money"></i></span><span class="label">Tunggakan SPP</span>
                     </a>
                     <p class="nav-section">Konten</p>
                     <a href="{{ route('gallery.manage') }}" class="nav-item {{ request()->routeIs('gallery.*') ? 'active' : '' }}">
@@ -399,16 +404,21 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        function applyResponsiveLayout() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            if (!sidebar || !mainContent) return;
 
-            sidebar.style.display = 'flex';
-            sidebar.style.transform = 'translateX(0)';
             if (window.innerWidth > 768) {
+                sidebar.classList.remove('hidden');
                 mainContent.style.marginLeft = '264px';
+            } else {
+                mainContent.style.marginLeft = '';
             }
-        });
+        }
+
+        document.addEventListener('DOMContentLoaded', applyResponsiveLayout);
+        window.addEventListener('resize', applyResponsiveLayout);
 
         function showToast(message = 'Data berhasil disimpan!') {
             const toast = document.getElementById('toast');

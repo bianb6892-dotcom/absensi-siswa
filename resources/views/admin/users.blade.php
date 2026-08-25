@@ -67,6 +67,7 @@
                         <tr>
                             <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">No</th>
                             <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Nama</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">NIS</th>
                             <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Email</th>
                             <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Role</th>
                             <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Aksi</th>
@@ -84,6 +85,9 @@
                                         </div>
                                         <span class="ml-3 text-sm font-semibold text-slate-900">{{ $u->name }}</span>
                                     </div>
+                                </td>
+                                <td class="px-4 py-3.5 whitespace-nowrap text-sm {{ $u->nis ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                    {{ $u->nis ?? 'belum ada' }}
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap text-sm text-slate-500">{{ $u->email }}</td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
@@ -181,6 +185,17 @@
                         <option value="siswa">Siswa</option>
                         <option value="admin">Admin</option>
                     </select>
+                </div>
+
+                <div id="edit_nis_wrap" class="hidden">
+                    <label for="edit_nis" class="label">NIS</label>
+                    <input type="text" name="nis" id="edit_nis" class="input" maxlength="20" placeholder="contoh: 2026001" autocomplete="off">
+                    <p class="mt-1 text-xs text-slate-400">
+                        NIS dipakai orang tua untuk login &amp; pemantauan. Kosongkan bila bukan siswa.
+                    </p>
+                    @error('nis')
+                        <p class="mt-1 text-xs font-medium text-rose-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div id="edit_ortu_wrap" class="hidden">
@@ -397,8 +412,9 @@
                         document.getElementById('edit_email').value = data.email;
                         document.getElementById('edit_role').value = data.role;
                         document.getElementById('edit_ortu_id').value = data.ortu_id || '';
+                        document.getElementById('edit_nis').value = data.nis || '';
                         document.getElementById('editForm').action = `/admin/users/${id}`;
-                        toggleOrtuField(data.role);
+                        toggleRoleFields(data.role);
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -407,17 +423,21 @@
                     });
             }
 
-            function toggleOrtuField(role) {
-                const wrap = document.getElementById('edit_ortu_wrap');
+            function toggleRoleFields(role) {
+                const ortuWrap = document.getElementById('edit_ortu_wrap');
+                const nisWrap = document.getElementById('edit_nis_wrap');
+
                 if (role === 'siswa') {
-                    wrap.classList.remove('hidden');
+                    ortuWrap.classList.remove('hidden');
+                    nisWrap.classList.remove('hidden');
                 } else {
-                    wrap.classList.add('hidden');
+                    ortuWrap.classList.add('hidden');
+                    nisWrap.classList.add('hidden');
                 }
             }
 
             document.getElementById('edit_role').addEventListener('change', function () {
-                toggleOrtuField(this.value);
+                toggleRoleFields(this.value);
             });
 
             function closeEditModal() {

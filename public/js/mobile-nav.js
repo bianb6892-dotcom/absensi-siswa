@@ -40,12 +40,18 @@ function toggleNav() {
 // INIT - DESKTOP SIDEBAR TETAP TERBUKA
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
+    if (typeof applyResponsiveLayout === 'function') {
+        applyResponsiveLayout();
+        return;
+    }
+
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
 
-    if (window.innerWidth > 768) {
-        sidebar.style.display = 'flex';
-        sidebar.style.transform = 'translateX(0)';
+    if (sidebar && window.innerWidth > 768) {
+        sidebar.classList.remove('hidden');
+    }
+    if (mainContent && window.innerWidth > 768) {
         mainContent.style.marginLeft = '264px';
     }
 });

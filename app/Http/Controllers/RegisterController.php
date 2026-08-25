@@ -7,6 +7,7 @@ use App\Models\OrangTua;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class RegisterController extends Controller
@@ -48,6 +49,7 @@ class RegisterController extends Controller
             'role' => 'required|in:ortu,guru,siswa',
             'kelas' => 'required_if:role,siswa|nullable|string',
             'ortu_id' => 'nullable|exists:orang_tua,id',  // ← Tambahkan ini
+            'nis' => 'nullable|string|max:20|unique:users,nis',
         ]);
 
         $user = User::create([
@@ -57,6 +59,7 @@ class RegisterController extends Controller
             'role' => $request->role,
             'kelas' => $request->kelas,
             'ortu_id' => $request->ortu_id,  // ← Tambahkan ini
+            'nis' => $request->filled('nis') ? $request->nis : null,
         ]);
 
         // Buat data orang tua di tabel orang_tua agar dashboard ortu berfungsi
@@ -167,6 +170,7 @@ class RegisterController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,'.$id,
             'role' => 'required|in:admin,guru,siswa,ortu',
             'ortu_id' => 'nullable|exists:orang_tua,id',
+            'nis' => ['nullable', 'string', 'max:20', Rule::unique('users', 'nis')->ignore($id)],
         ]);
 
         $user->update([
@@ -174,6 +178,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'role' => $request->role,
             'ortu_id' => $request->ortu_id,
+            'nis' => $request->filled('nis') ? $request->nis : null,
         ]);
 
         $this->syncOrangTua($user);
@@ -231,7 +236,7 @@ class RegisterController extends Controller
     public function downloadTemplate()
     {
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="template_siswa.csv"',
         ];
 

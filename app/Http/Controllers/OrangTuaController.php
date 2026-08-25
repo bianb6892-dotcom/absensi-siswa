@@ -7,6 +7,7 @@ use App\Models\Gallery;
 use App\Models\Nilai;
 use App\Models\Notifikasi;
 use App\Models\OrangTua;
+use App\Models\TunggakanSpp;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -34,6 +35,10 @@ class OrangTuaController extends Controller
                 ->get(['keterangan'])
                 ->countBy('keterangan');
 
+            $tunggakan = TunggakanSpp::where('user_id', $siswa->id)
+                ->orderByDesc('bulan')
+                ->get();
+
             $data[] = [
                 'siswa' => $siswa,
                 'hadir' => $bulanIniRows->get('hadir', 0),
@@ -44,6 +49,8 @@ class OrangTuaController extends Controller
                 'hari_ini' => Absensi::where('user_id', $siswa->id)
                     ->whereDate('tanggal', Carbon::today())
                     ->first(),
+                'tunggakan' => $tunggakan,
+                'total_tunggakan' => (float) $tunggakan->sum('jumlah'),
             ];
         }
 

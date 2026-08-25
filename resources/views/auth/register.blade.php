@@ -134,7 +134,7 @@
                         </div>
                         <select name="role" id="role"
                             class="input pl-11 pr-10 appearance-none cursor-pointer"
-                            onchange="toggleKelas(); toggleOrtu();">
+                            onchange="toggleKelas(); toggleOrtu(); toggleNis();">
                             <option value="ortu" {{ old('role') == 'ortu' ? 'selected' : '' }}>Orang Tua</option>
                             <option value="guru" {{ old('role') == 'guru' ? 'selected' : '' }}>Guru</option>
                             <option value="siswa" {{ old('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
@@ -204,6 +204,20 @@
                     <p class="mt-1 text-xs text-slate-400">* Pilih orang tua untuk siswa ini</p>
                 </div>
 
+                <div id="nis-field" class="{{ old('role') == 'siswa' ? '' : 'hidden' }}">
+                    <label for="nis" class="label">NIS <span class="font-normal text-slate-400">(opsional)</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                            <i class="ph ph-identification-card text-lg text-slate-400"></i>
+                        </div>
+                        <input type="text" name="nis" id="nis" value="{{ old('nis') }}" maxlength="20"
+                            class="input pl-11" placeholder="contoh: 2026001" autocomplete="off">
+                    </div>
+                    <p class="mt-1 text-xs text-slate-400">
+                        * NIS dipakai orang tua untuk login ke portal pemantauan
+                    </p>
+                </div>
+
                 <button type="submit" class="btn btn-primary w-full py-3">
                     <i class="ph ph-user-plus text-lg"></i>
                     Daftar Sekarang
@@ -227,12 +241,24 @@
         document.addEventListener('DOMContentLoaded', function () {
             toggleKelas();
             toggleOrtu();
+            toggleNis();
         });
 
         document.getElementById('role').addEventListener('change', function () {
             toggleKelas();
             toggleOrtu();
+            toggleNis();
         });
+
+        function toggleNis() {
+            const role = document.getElementById('role').value;
+            const nisField = document.getElementById('nis-field');
+
+            if (nisField) {
+                nisField.style.display = role === 'siswa' ? 'block' : 'none';
+                if (role !== 'siswa') document.getElementById('nis').value = '';
+            }
+        }
 
         function toggleKelas() {
             const role = document.getElementById('role').value;

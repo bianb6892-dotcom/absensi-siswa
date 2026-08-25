@@ -54,7 +54,7 @@
             </h3>
 
             @if($setengah->count() > 0)
-                <div class="overflow-hidden rounded-xl border border-slate-100 shadow-sm">
+                <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="bg-slate-50">
@@ -90,7 +90,7 @@
             </h3>
 
             @if($akhir->count() > 0)
-                <div class="overflow-hidden rounded-xl border border-slate-100 shadow-sm">
+                <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="bg-slate-50">

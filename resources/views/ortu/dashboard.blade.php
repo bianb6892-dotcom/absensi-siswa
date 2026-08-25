@@ -67,27 +67,53 @@
 
                     <div class="p-5">
                         <div class="grid grid-cols-4 gap-2.5">
-                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-2 sm:p-3 text-center">
                                 <i class="ph-fill ph-check-circle text-base text-blue-600"></i>
-                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['hadir'] }}</p>
+                                <p class="mt-0.5 text-lg sm:text-xl font-extrabold text-slate-900">{{ $item['hadir'] }}</p>
                                 <p class="text-[11px] font-bold text-slate-400">Hadir</p>
                             </div>
-                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-2 sm:p-3 text-center">
                                 <i class="ph-fill ph-envelope text-base text-amber-500"></i>
-                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['ijin'] }}</p>
+                                <p class="mt-0.5 text-lg sm:text-xl font-extrabold text-slate-900">{{ $item['ijin'] }}</p>
                                 <p class="text-[11px] font-bold text-slate-400">Izin</p>
                             </div>
-                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-2 sm:p-3 text-center">
                                 <i class="ph-fill ph-first-aid text-base text-sky-500"></i>
-                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['sakit'] }}</p>
+                                <p class="mt-0.5 text-lg sm:text-xl font-extrabold text-slate-900">{{ $item['sakit'] }}</p>
                                 <p class="text-[11px] font-bold text-slate-400">Sakit</p>
                             </div>
-                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-2 sm:p-3 text-center">
                                 <i class="ph-fill ph-x-circle text-base text-rose-500"></i>
-                                <p class="mt-0.5 text-xl font-extrabold text-slate-900">{{ $item['alpa'] }}</p>
+                                <p class="mt-0.5 text-lg sm:text-xl font-extrabold text-slate-900">{{ $item['alpa'] }}</p>
                                 <p class="text-[11px] font-bold text-slate-400">Alpa</p>
                             </div>
                         </div>
+                        @if(isset($item['tunggakan']) && $item['tunggakan']->count() > 0)
+                            <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <i class="ph-fill ph-warning-circle text-base text-amber-600"></i>
+                                    <p class="text-sm font-extrabold text-amber-800">
+                                        Tunggakan SPP ({{ $item['tunggakan']->count() }} bulan)
+                                    </p>
+                                    <span class="ml-auto rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white">
+                                        Rp {{ number_format($item['total_tunggakan'], 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    @foreach($item['tunggakan'] as $t)
+                                        <span class="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-bold text-amber-800"
+                                            title="{{ $t->keterangan ?? 'Tunggakan SPP' }}">
+                                            <i class="ph ph-calendar-x text-sm"></i>
+                                            {{ $t->bulan_label }}
+                                            <span class="font-medium text-amber-600">· {{ $t->jumlah_rupiah }}</span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                                <p class="mt-3 text-[11px] font-medium text-amber-700">
+                                    Mohon segera lakukan pembayaran ke bendahara sekolah.
+                                </p>
+                            </div>
+                        @endif
                         <a href="{{ route('ortu.anak', $item['siswa']->id) }}"
                             class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800">
                             <i class="ph ph-eye text-lg"></i>

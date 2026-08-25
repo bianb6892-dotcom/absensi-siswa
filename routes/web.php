@@ -10,6 +10,7 @@ use App\Http\Controllers\ImportAbsensiController;
 use App\Http\Controllers\OrangTuaController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TunggakanSppController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -92,6 +93,17 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->group(function () {
     Route::post('/nilai/{periode}/import', [GuruNilaiController::class, 'import'])->name('guru.nilai.import');
     Route::get('/nilai/{periode}/template', [GuruNilaiController::class, 'downloadTemplate'])->name('guru.nilai.template');
     Route::delete('/nilai/{id}', [GuruNilaiController::class, 'destroy'])->name('guru.nilai.destroy');
+});
+
+// =============================================
+// ROUTE TUNGGAKAN SPP (Khusus Guru)
+// =============================================
+Route::middleware(['auth', 'role:guru'])->group(function () {
+    Route::get('/tunggakan-spp', [TunggakanSppController::class, 'index'])->name('guru.tunggakan.index');
+    Route::post('/tunggakan-spp', [TunggakanSppController::class, 'store'])->name('guru.tunggakan.store');
+    Route::get('/tunggakan-spp/{id}/edit', [TunggakanSppController::class, 'edit'])->name('guru.tunggakan.edit');
+    Route::put('/tunggakan-spp/{id}', [TunggakanSppController::class, 'update'])->name('guru.tunggakan.update');
+    Route::delete('/tunggakan-spp/{id}', [TunggakanSppController::class, 'destroy'])->name('guru.tunggakan.destroy');
 });
 
 // =============================================

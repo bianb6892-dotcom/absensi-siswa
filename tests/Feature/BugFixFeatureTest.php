@@ -59,36 +59,46 @@ class BugFixFeatureTest extends TestCase
         return [$ortuUser, $ortu];
     }
 
-    public function test_register_as_ortu_creates_orang_tua_row_and_redirects_to_ortu_dashboard(): void
+    public function test_guest_cannot_access_register_page(): void
     {
-        $this->get('/register')->assertOk();
+        $this->get('/admin/register')->assertRedirect('/login');
+        $this->post('/admin/register', [])->assertRedirect('/login');
+    }
 
-        $response = $this->post('/register', [
-            'name' => 'Ibu Ani',
-            'email' => 'ibu@test.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'role' => 'ortu',
-        ]);
+    public function test_non_admin_cannot_access_register_page(): void
+    {
+        $this->actingAs($this->makeGuru())->get('/admin/register')->assertForbidden();
+        $this->actingAs($this->makeOrtu()[0])->post('/admin/register', [])->assertForbidden();
+    }
 
-        $response->assertRedirect('/ortu/dashboard');
+    public function test_admin_register_as_ortu_creates_orang_tua_row(): void
+    {
+        $this->actingAs($this->makeAdmin())
+            ->post('/admin/register', [
+                'name' => 'Ibu Ani',
+                'email' => 'ibu@test.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => 'ortu',
+            ])
+            ->assertRedirect('/admin/users');
 
         $user = User::where('email', 'ibu@test.com')->first();
         $this->assertNotNull($user);
         $this->assertDatabaseHas('orang_tua', ['user_id' => $user->id]);
     }
 
-    public function test_register_as_guru_without_kelas_succeeds(): void
+    public function test_admin_register_as_guru_without_kelas_succeeds(): void
     {
-        $response = $this->post('/register', [
-            'name' => 'Guru Baru',
-            'email' => 'gurubaru@test.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'role' => 'guru',
-        ]);
-
-        $response->assertRedirect('/guru/dashboard');
+        $this->actingAs($this->makeAdmin())
+            ->post('/admin/register', [
+                'name' => 'Guru Baru',
+                'email' => 'gurubaru@test.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => 'guru',
+            ])
+            ->assertRedirect('/admin/users');
 
         $this->assertDatabaseHas('users', [
             'email' => 'gurubaru@test.com',
@@ -96,9 +106,11 @@ class BugFixFeatureTest extends TestCase
         ]);
     }
 
-    public function test_register_as_siswa_requires_kelas_and_redirects_to_guru_dashboard(): void
+    public function test_admin_register_as_siswa_requires_kelas(): void
     {
-        $response = $this->post('/register', [
+        $admin = $this->makeAdmin();
+
+        $response = $this->actingAs($admin)->post('/admin/register', [
             'name' => 'Siswa Baru',
             'email' => 'siswabaru@test.com',
             'password' => 'password',
@@ -108,51 +120,58 @@ class BugFixFeatureTest extends TestCase
 
         $response->assertSessionHasErrors('kelas');
 
-        $response = $this->post('/register', [
+        $this->actingAs($admin)->post('/admin/register', [
             'name' => 'Siswa Baru',
             'email' => 'siswabaru@test.com',
             'password' => 'password',
             'password_confirmation' => 'password',
             'role' => 'siswa',
             'kelas' => 'X PPLG',
-        ]);
+        ])->assertRedirect('/admin/users');
 
-        $response->assertRedirect('/guru/dashboard');
+        $this->assertDatabaseHas('users', [
+            'email' => 'siswabaru@test.com',
+            'role' => 'siswa',
+            'kelas' => 'X PPLG',
+        ]);
     }
 
     public function test_register_cannot_create_admin_account(): void
     {
-        $this->post('/register', [
-            'name' => 'Hacker',
-            'email' => 'hacker@test.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'role' => 'admin',
-        ])->assertSessionHasErrors('role');
+        $this->actingAs($this->makeAdmin())
+            ->post('/admin/register', [
+                'name' => 'Hacker',
+                'email' => 'hacker@test.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => 'admin',
+            ])->assertSessionHasErrors('role');
 
         $this->assertDatabaseMissing('users', ['email' => 'hacker@test.com']);
     }
 
     public function test_register_page_does_not_offer_admin_role(): void
     {
-        $this->get('/register')
+        $this->actingAs($this->makeAdmin())
+            ->get('/admin/register')
             ->assertOk()
-            ->assertDontSee('value="admin"');
+            ->assertDontSee('value="admin"', false);
     }
 
-    public function test_register_guru_can_link_to_real_orang_tua_row(): void
+    public function test_admin_can_link_new_siswa_to_real_orang_tua_row(): void
     {
         [$ortuUser, $ortu] = $this->makeOrtu();
 
-        $this->post('/register', [
-            'name' => 'Siswa Baru',
-            'email' => 'siswabaru@test.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'role' => 'guru',
-            'kelas' => 'X PPLG',
-            'ortu_id' => $ortu->id,
-        ])->assertRedirect('/guru/dashboard');
+        $this->actingAs($this->makeAdmin())
+            ->post('/admin/register', [
+                'name' => 'Siswa Baru',
+                'email' => 'siswabaru@test.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => 'siswa',
+                'kelas' => 'X PPLG',
+                'ortu_id' => $ortu->id,
+            ])->assertRedirect('/admin/users');
 
         $this->assertDatabaseHas('users', [
             'email' => 'siswabaru@test.com',
@@ -275,6 +294,117 @@ class BugFixFeatureTest extends TestCase
             ->get('/admin/users/template')
             ->assertOk()
             ->assertHeader('Content-Type', 'text/csv; charset=utf-8');
+    }
+
+    public function test_admin_can_fill_nis_for_existing_student(): void
+    {
+        $admin = $this->makeAdmin();
+        $siswa = $this->makeSiswa(); // dibuat tanpa NIS
+        $this->assertNull($siswa->fresh()->nis);
+
+        $this->actingAs($admin)
+            ->put('/admin/users/'.$siswa->id, [
+                'name' => $siswa->name,
+                'email' => $siswa->email,
+                'role' => 'siswa',
+                'ortu_id' => '',
+                'nis' => '2026099',
+            ])
+            ->assertRedirect('/admin/users');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $siswa->id,
+            'nis' => '2026099',
+        ]);
+    }
+
+    public function test_admin_can_keep_existing_nis_when_editing_other_fields(): void
+    {
+        $admin = $this->makeAdmin();
+        $siswa = $this->makeSiswa();
+        $siswa->update(['nis' => '2026001']);
+
+        $this->actingAs($admin)
+            ->put('/admin/users/'.$siswa->id, [
+                'name' => 'Nama Baru',
+                'email' => $siswa->email,
+                'role' => 'siswa',
+                'ortu_id' => '',
+                'nis' => '2026001', // NIS sama miliknya sendiri harus tetap lolos
+            ])
+            ->assertRedirect('/admin/users');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $siswa->id,
+            'name' => 'Nama Baru',
+            'nis' => '2026001',
+        ]);
+    }
+
+    public function test_admin_cannot_use_duplicate_nis(): void
+    {
+        $admin = $this->makeAdmin();
+        $siswaA = $this->makeSiswa();
+        $siswaB = User::create([
+            'name' => 'Siswa Kedua',
+            'email' => 'kedua@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'siswa',
+            'kelas' => 'X PPLG',
+        ]);
+        $siswaA->update(['nis' => '2026001']);
+
+        $this->actingAs($admin)
+            ->put('/admin/users/'.$siswaB->id, [
+                'name' => $siswaB->name,
+                'email' => $siswaB->email,
+                'role' => 'siswa',
+                'ortu_id' => '',
+                'nis' => '2026001', // sudah dipakai siswa lain
+            ])
+            ->assertSessionHasErrors('nis');
+
+        $this->assertNull($siswaB->fresh()->nis);
+    }
+
+    public function test_admin_can_clear_nis_of_student(): void
+    {
+        $admin = $this->makeAdmin();
+        $siswa = $this->makeSiswa();
+        $siswa->update(['nis' => '2026001']);
+
+        $this->actingAs($admin)
+            ->put('/admin/users/'.$siswa->id, [
+                'name' => $siswa->name,
+                'email' => $siswa->email,
+                'role' => 'siswa',
+                'ortu_id' => '',
+                'nis' => '', // dikosongkan
+            ])
+            ->assertRedirect('/admin/users');
+
+        $this->assertNull($siswa->fresh()->nis);
+    }
+
+    public function test_admin_register_siswa_with_optional_nis(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)
+            ->post('/admin/register', [
+                'name' => 'Siswa Dengan NIS',
+                'email' => 'dengan-nis@test.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => 'siswa',
+                'kelas' => 'X PPLG',
+                'nis' => '2026777',
+            ])->assertRedirect('/admin/users');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'dengan-nis@test.com',
+            'nis' => '2026777',
+        ]);
     }
 
     public function test_admin_can_link_student_to_parent_via_edit(): void
@@ -447,7 +577,8 @@ class BugFixFeatureTest extends TestCase
     {
         [$ortuUser, $ortu] = $this->makeOrtu();
 
-        $this->get('/register')
+        $this->actingAs($this->makeAdmin())
+            ->get('/admin/register')
             ->assertOk()
             ->assertSee($ortuUser->name, false)
             ->assertSee('value="'.$ortu->id.'"', false);
