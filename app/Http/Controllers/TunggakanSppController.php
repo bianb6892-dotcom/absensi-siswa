@@ -36,13 +36,18 @@ class TunggakanSppController extends Controller
 
         $totalTunggakan = $tunggakanList->sum('jumlah');
 
-        return view('guru.tunggakan-index', compact(
-            'kelasTerpilih',
-            'daftarKelas',
-            'siswa',
-            'tunggakanList',
-            'totalTunggakan'
-        ));
+        // Kirim header anti-cache biar browser & service worker tidak simpan halaman lama (fix bug muncul lagi setelah hapus)
+        return response()
+            ->view('guru.tunggakan-index', compact(
+                'kelasTerpilih',
+                'daftarKelas',
+                'siswa',
+                'tunggakanList',
+                'totalTunggakan'
+            ))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
 
     public function store(Request $request)
@@ -128,10 +133,15 @@ class TunggakanSppController extends Controller
             ->with('success', 'Tunggakan SPP '.$bulan->translatedFormat('F Y').' atas nama '.$tunggakan->user->name.' berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $tunggakan = TunggakanSpp::findOrFail($id);
         $tunggakan->delete();
+
+        // Jika request AJAX/fetch, balas JSON biar bisa hapus tanpa refresh
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['success' => true, 'message' => 'Data tunggakan SPP berhasil dihapus!', 'id' => (int) $id]);
+        }
 
         return redirect()->back()->with('success', 'Data tunggakan SPP berhasil dihapus!');
     }

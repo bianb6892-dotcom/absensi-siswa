@@ -140,5 +140,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/absensi-cepat/siswa/{kelas}', [AbsensiCepatController::class, 'getSiswaByKelas'])->name('absensi.cepat.siswa');
 });
 
+// Halaman Download Aplikasi (PWA) - Public, bisa diakses tanpa login, bahasa awam
+Route::get('/install', function () {
+    return view('install');
+})->name('pwa.install');
+
 // School Dashboard (Public)
 Route::get('/school-dashboard', [GalleryController::class, 'index'])->name('school.dashboard');

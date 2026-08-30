@@ -25,6 +25,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1D4ED8">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style type="text/tailwindcss">
         body {
@@ -82,6 +87,7 @@
             padding: 1rem 1.25rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/responsive-fixes.css') }}">
     @stack('styles')
 </head>
 <body class="font-sans antialiased min-h-screen text-slate-800">
@@ -89,29 +95,31 @@
     <!-- ===== HEADER STICKY ===== -->
     <header class="fixed top-0 inset-x-0 z-40 pt-safe">
         <div class="mx-auto w-full max-w-md px-4 pt-4">
-            <div class="flex items-center justify-between rounded-2xl bg-blue-700 px-4 py-3 shadow-lg shadow-blue-900/20">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/20">
-                        <i class="ph-fill ph-student text-xl"></i>
+            <div class="flex items-center gap-2 sm:gap-3 rounded-2xl bg-blue-700 px-3 sm:px-4 py-3 shadow-lg shadow-blue-900/20">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/20">
+                        <i class="ph-fill ph-student text-lg sm:text-xl"></i>
                     </div>
-                    <div class="min-w-0">
-                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-100">Absensi Siswa</p>
-                        <h1 class="truncate text-base font-extrabold leading-tight text-white">
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] text-blue-100">Absensi Siswa</p>
+                        <h1 class="text-sm sm:text-base font-extrabold leading-tight text-white break-words line-clamp-2">
                             Halo, {{ Auth::user()->name }}
                         </h1>
                     </div>
                 </div>
-                <a href="{{ route('pengaturan.show') }}" title="Pengaturan"
-                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white transition-colors hover:bg-white/25">
-                    <i class="ph-fill ph-gear text-lg"></i>
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" title="Keluar"
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white transition-colors hover:bg-white/25">
-                        <i class="ph-fill ph-sign-out text-lg"></i>
-                    </button>
-                </form>
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <a href="{{ route('pengaturan.show') }}" title="Pengaturan"
+                        class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white transition-colors hover:bg-white/25">
+                        <i class="ph-fill ph-gear text-base sm:text-lg"></i>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="shrink-0">
+                        @csrf
+                        <button type="submit" title="Keluar"
+                            class="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white/15 text-white transition-colors hover:bg-white/25">
+                            <i class="ph-fill ph-sign-out text-base sm:text-lg"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
@@ -192,5 +200,23 @@
     </nav>
 
     @stack('scripts')
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').catch(function(e){console.log(e);});
+            });
+        }
+        let deferredPromptOrtu = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPromptOrtu = e;
+            const b = document.getElementById('pwa-install-btn-ortu');
+            if(b) b.classList.remove('hidden');
+        });
+        async function triggerPwaInstallOrtu(){
+            if(deferredPromptOrtu){ deferredPromptOrtu.prompt(); await deferredPromptOrtu.userChoice; deferredPromptOrtu=null; }
+            else { window.location.href='/install'; }
+        }
+    </script>
 </body>
 </html>

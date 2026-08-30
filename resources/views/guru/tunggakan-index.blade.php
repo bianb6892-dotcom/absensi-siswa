@@ -18,7 +18,7 @@
         </div>
         <div>
             <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Total tunggakan</p>
-            <p class="text-sm font-bold text-slate-900">Rp {{ number_format((float) $totalTunggakan, 0, ',', '.') }}</p>
+            <p id="total-tunggakan" class="text-sm font-bold text-slate-900" data-total="{{ (float) $totalTunggakan }}">Rp {{ number_format((float) $totalTunggakan, 0, ',', '.') }}</p>
         </div>
     </div>
 </div>
@@ -106,10 +106,10 @@
                         <th class="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500 rounded-r-xl bg-slate-50">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody id="tunggakan-tbody" class="divide-y divide-slate-100">
                     @forelse($tunggakanList as $key => $t)
-                        <tr class="transition-colors hover:bg-slate-50/70">
-                            <td class="px-4 py-3.5 whitespace-nowrap text-sm text-slate-500">{{ $key + 1 }}</td>
+                        <tr id="row-{{ $t->id }}" data-jumlah="{{ (float) $t->jumlah }}" class="transition-colors hover:bg-slate-50/70">
+                            <td class="px-4 py-3.5 whitespace-nowrap text-sm text-slate-500 row-no">{{ $key + 1 }}</td>
                             <td class="px-4 py-3.5 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-700 text-xs font-bold text-white">
@@ -132,20 +132,15 @@
                                         class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 transition-colors hover:bg-blue-50">
                                         <i class="ph ph-pencil-simple"></i> Edit
                                     </button>
-                                    <form method="POST" action="{{ route('guru.tunggakan.destroy', $t->id) }}"
-                                        onsubmit="return confirm('Yakin ingin menghapus tunggakan SPP {{ $t->bulan_label }} milik {{ $t->user->name ?? '-' }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-rose-600 border border-rose-200 transition-colors hover:bg-rose-50">
-                                            <i class="ph ph-trash"></i> Hapus
-                                        </button>
-                                    </form>
+                                    <button type="button" onclick="hapusTunggakan({{ $t->id }}, '{{ addslashes($t->bulan_label) }}', '{{ addslashes($t->user->name ?? '-') }}')"
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-rose-600 border border-rose-200 transition-colors hover:bg-rose-50">
+                                        <i class="ph ph-trash"></i> Hapus
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                     @empty
-                        <tr>
+                        <tr id="empty-row">
                             <td colspan="7" class="px-4 py-12 text-center text-slate-400">
                                 <i class="ph ph-check-circle text-5xl block mb-3 text-green-200"></i>
                                 Tidak ada tunggakan SPP di kelas ini
@@ -216,9 +211,121 @@
 
 @push('scripts')
 <script>
+// Paksa service worker update ke v3 biar cache lama hilang (fix bug muncul lagi)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(r => r.update());
+    });
+    // Hapus cache lama yang masih nyimpen halaman tunggakan v1/v2
+    if ('caches' in window) {
+        caches.keys().then(keys => {
+            keys.forEach(k => {
+                if (k.includes('absensi-siswa-v1') || k.includes('absensi-siswa-v2')) {
+                    caches.delete(k);
+                }
+            });
+        });
+    }
+}
 function formatRibuan(el) {
     const digits = el.value.replace(/[^\d]/g, '');
     el.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+async function hapusTunggakan(id, bulanLabel, nama) {
+    if (!confirm(`Yakin ingin menghapus tunggakan SPP ${bulanLabel} milik ${nama}?`)) return;
+
+    const token = document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+    const row = document.getElementById(`row-${id}`);
+    if (row) { row.style.opacity = '0.5'; row.style.pointerEvents = 'none'; }
+
+    try {
+        const res = await fetch(`/tunggakan-spp/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        });
+
+        let data = {};
+        let text = '';
+        try {
+            text = await res.text();
+            data = text ? JSON.parse(text) : {};
+        } catch (err) {
+            data = {};
+        }
+
+        if (!res.ok || !data.success) {
+            // Jika 401/403, kasih pesan yang jelas bahasa Indonesia
+            if (res.status === 401) throw new Error(data.message || 'Sesi kamu habis. Silakan refresh halaman dan login lagi.');
+            if (res.status === 403) throw new Error(data.message || 'Kamu tidak punya izin untuk hapus tunggakan. Pastikan login sebagai Guru (bukan Ortu/Siswa).');
+            if (res.status === 419) throw new Error('Sesi habis (CSRF). Silakan refresh halaman.');
+            throw new Error(data.message || `Gagal menghapus (kode ${res.status})`);
+        }
+
+        // Hapus baris tanpa refresh
+        if (row) row.remove();
+
+        // Hapus cache lama biar kalau tambah data tidak muncul lagi yang sudah dihapus
+        if ('caches' in window) {
+            try {
+                const keys = await caches.keys();
+                for (const k of keys) {
+                    const c = await caches.open(k);
+                    const reqs = await c.keys();
+                    for (const r of reqs) {
+                        if (r.url.includes('/tunggakan-spp')) await c.delete(r);
+                    }
+                }
+            } catch(e) { console.log('cache clear fail', e); }
+        }
+
+        // Update total tunggakan
+        const totalEl = document.getElementById('total-tunggakan');
+        if (totalEl) {
+            const curTotal = parseFloat(totalEl.dataset.total || '0');
+            const rowJumlah = parseFloat(row?.dataset.jumlah || '0');
+            const newTotal = Math.max(0, curTotal - rowJumlah);
+            totalEl.dataset.total = newTotal;
+            totalEl.textContent = 'Rp ' + newTotal.toLocaleString('id-ID');
+        }
+
+        // Update nomor urut
+        document.querySelectorAll('#tunggakan-tbody tr[id^="row-"] .row-no').forEach((el, idx) => {
+            el.textContent = idx + 1;
+        });
+
+        // Jika kosong, tampilkan empty state
+        const remaining = document.querySelectorAll('#tunggakan-tbody tr[id^="row-"]').length;
+        if (remaining === 0) {
+            const tbody = document.getElementById('tunggakan-tbody');
+            if (tbody && !document.getElementById('empty-row')) {
+                tbody.innerHTML = `<tr id="empty-row"><td colspan="7" class="px-4 py-12 text-center text-slate-400"><i class="ph ph-check-circle text-5xl block mb-3 text-green-200"></i>Tidak ada tunggakan SPP di kelas ini</td></tr>`;
+            }
+        }
+
+        // Toast sukses (pakai fungsi global kalau ada)
+        if (typeof showToast === 'function') {
+            showToast(data.message || 'Berhasil dihapus');
+        } else {
+            // fallback: buat toast kecil
+            const t = document.createElement('div');
+            t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-xl text-sm shadow-lg z-50';
+            t.textContent = data.message || 'Berhasil dihapus';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+    } catch (e) {
+        if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; }
+        alert(e.message || 'Gagal menghapus tunggakan');
+        console.error(e);
+    }
 }
 
 async function openEdit(id) {

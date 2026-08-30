@@ -32,14 +32,14 @@
         <div class="mt-6 space-y-5">
             @foreach($data as $item)
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
-                    <div class="flex items-center justify-between gap-3 bg-white p-5">
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-700 text-lg font-extrabold text-white">
+                    <div class="flex items-start justify-between gap-3 bg-white p-4 sm:p-5">
+                        <div class="flex items-start gap-3 min-w-0 flex-1">
+                            <div class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-700 text-base sm:text-lg font-extrabold text-white">
                                 {{ strtoupper(substr($item['siswa']->name, 0, 2)) }}
                             </div>
-                            <div class="min-w-0">
-                                <h3 class="truncate text-base font-extrabold text-slate-900">{{ $item['siswa']->name }}</h3>
-                                <p class="truncate text-xs font-medium text-slate-400">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight break-words">{{ $item['siswa']->name }}</h3>
+                                <p class="text-xs font-medium text-slate-400 break-words">
                                     NIS: {{ $item['siswa']->nis ?? '-' }} · Kelas {{ $item['siswa']->kelas }}
                                 </p>
                             </div>

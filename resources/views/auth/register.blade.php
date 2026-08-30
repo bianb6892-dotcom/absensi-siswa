@@ -56,7 +56,7 @@
             </div>
             <div>
                 <p class="text-lg font-extrabold text-slate-900 leading-tight">Absensi Siswa</p>
-                <p class="text-xs font-medium text-slate-500">SMK Digital Nusantara</p>
+                <p class="text-xs font-medium text-slate-500">SMK BPPI Baleendah</p>
             </div>
         </div>
 
@@ -233,7 +233,7 @@
         </div>
 
         <p class="mt-6 text-center text-xs text-slate-400">
-            &copy; {{ date('Y') }} SMK Digital Nusantara &middot; Sistem Absensi Siswa
+            &copy; {{ date('Y') }} SMK BPPI Baleendah &middot; Sistem Absensi Siswa
         </p>
     </div>
 

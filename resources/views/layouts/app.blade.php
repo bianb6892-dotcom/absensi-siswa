@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Absensi Siswa') | SMK Digital Nusantara</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Absensi Siswa') | SMK BPPI Baleendah</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,6 +25,15 @@
 
     <!-- Custom Navbar CSS -->
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive-fixes.css') }}">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1D4ED8">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Absensi Siswa">
 
     <!-- jQuery & DataTables -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -205,7 +215,7 @@
                 <span class="logo-icon"><i class="ph ph-student ph-fill"></i></span>
                 <div>
                     Absensi Siswa
-                    <span>SMK Digital Nusantara</span>
+                    <span>SMK BPPI Baleendah</span>
                 </div>
             </h1>
         </div>
@@ -290,7 +300,22 @@
                         <span class="label">Gallery Sekolah</span>
                     </a>
                 @endif
+                @if(auth()->user()->role == 'ortu')
+                <!-- Tombol Download Aplikasi - Hanya untuk Ortu -->
+                <p class="nav-section">Aplikasi</p>
+                <a href="{{ route('pwa.install') }}" class="nav-item {{ request()->routeIs('pwa.install') ? 'active' : '' }}">
+                    <span class="icon"><i class="ph ph-download-simple"></i></span><span class="label">Download Aplikasi</span>
+                </a>
+                <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="nav-item hidden w-full text-left" style="background: #1D4ED8; color: #fff; border: none; margin-top: 6px;">
+                    <span class="icon"><i class="ph-fill ph-download-simple"></i></span><span class="label">Install Sekarang</span>
+                </button>
+                @endif
             @endauth
+            @guest
+                <a href="{{ route('pwa.install') }}" class="nav-item {{ request()->routeIs('pwa.install') ? 'active' : '' }}">
+                    <span class="icon"><i class="ph ph-download-simple"></i></span><span class="label">Download Aplikasi</span>
+                </a>
+            @endguest
         </div>
 
         <div class="nav-footer">
@@ -443,6 +468,40 @@
     <div id="sidebarOverlayMobile" class="sidebar-overlay-mobile" onclick="closeMobileSidebar()"></div>
 
     <script src="{{ asset('js/mobile-nav.js') }}"></script>
+
+    <!-- PWA: Service Worker + Install Prompt -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(reg){
+                    console.log('SW registered', reg.scope);
+                }).catch(function(err){ console.log('SW failed', err); });
+            });
+        }
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('pwa-install-btn');
+            if(btn){ btn.classList.remove('hidden'); btn.classList.add('flex'); }
+            const banner = document.getElementById('pwa-banner');
+            if(banner) banner.classList.remove('hidden');
+        });
+        async function triggerPwaInstall(){
+            if(deferredPrompt){
+                deferredPrompt.prompt();
+                const r = await deferredPrompt.userChoice;
+                if(r.outcome === 'accepted') console.log('PWA installed');
+                deferredPrompt = null;
+                const btn = document.getElementById('pwa-install-btn');
+                if(btn) btn.classList.add('hidden');
+            } else {
+                // iOS atau sudah terinstall -> arahkan ke halaman bantuan
+                window.location.href = '/install';
+            }
+        }
+        window.addEventListener('appinstalled', () => { deferredPrompt = null; });
+    </script>
 </body>
 
 </html>

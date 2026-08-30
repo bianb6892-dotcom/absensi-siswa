@@ -11,12 +11,28 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         if (! auth()->check()) {
-            abort(403, 'Unauthorized. Please login first.');
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Sesi habis. Silakan login ulang.'], 401);
+            }
+            // Kalau buka halaman guru tapi belum login, arahkan ke login bukan 403 serem
+            return redirect()->route('login')->with('error', 'Silakan login dulu.');
         }
 
         // Cek apakah role user sesuai (role:admin,guru -> ['admin', 'guru'])
         if (! in_array(auth()->user()->role, $roles, true)) {
-            abort(403, 'Unauthorized access. You do not have permission to access this page.');
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Kamu tidak punya izin untuk aksi ini.'], 403);
+            }
+            // Jangan kasih halaman 403 serem, arahkan ke dashboard yang benar sesuai role
+            $role = auth()->user()->role;
+            $target = match ($role) {
+                'admin' => route('admin.dashboard'),
+                'guru' => route('guru.dashboard'),
+                'siswa' => route('guru.dashboard'),
+                'ortu' => route('ortu.dashboard'),
+                default => route('login'),
+            };
+            return redirect($target)->with('error', 'Kamu tidak punya izin untuk membuka halaman itu. Sudah diarahkan ke dashboard kamu.');
         }
 
         return $next($request);

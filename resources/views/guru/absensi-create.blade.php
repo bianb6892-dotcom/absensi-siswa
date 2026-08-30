@@ -38,9 +38,9 @@
 <!-- Tab Manual Input -->
 <div id="manual-tab">
     <div class="card overflow-hidden">
-        <div class="border-b border-slate-100 bg-white px-6 py-5">
-            <div class="flex flex-wrap items-center gap-4">
-                <div class="max-w-md flex-1">
+        <div class="border-b border-slate-100 bg-white px-4 sm:px-6 py-4 sm:py-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="w-full">
                     <label for="kelas_absensi" class="mb-2 block text-sm font-semibold text-slate-700">
                         Pilih Kelas
                     </label>
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="max-w-md flex-1">
+                <div class="w-full">
                     <label for="tanggal_absensi" class="mb-2 block text-sm font-semibold text-slate-700">
                         Pilih Tanggal Absensi
                     </label>

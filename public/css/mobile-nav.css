@@ -130,6 +130,13 @@
 }
 
 /* ============================================ */
+/* RESPONSIVE - TABLET (769-1024px)             */
+/* ============================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .table-wrapper table { font-size: 14px !important; }
+}
+
+/* ============================================ */
 /* RESPONSIVE - MOBILE (< 768px)                */
 /* ============================================ */
 @media (max-width: 768px) {
@@ -138,6 +145,7 @@
         transform: translateX(-100%) !important;
         transition: transform 0.3s ease !important;
         width: 280px !important;
+        max-width: 85vw !important;
         display: flex !important;
         z-index: 9998 !important;
     }
@@ -172,6 +180,9 @@
     .bottom-nav-mobile {
         display: flex !important;
     }
+
+    /* Card stack di tablet kecil */
+    .card { border-radius: 0.875rem !important; }
 }
 
 @media (max-width: 640px) {
@@ -187,6 +198,16 @@
     .table-wrapper table td {
         padding: 6px 10px !important;
     }
+
+    /* Tombol full width di HP kecil */
+    .btn { width: 100% !important; justify-content: center !important; }
+    .btn-sm-mobile { padding: 10px 14px !important; font-size: 13px !important; }
+}
+
+@media (max-width: 380px) {
+    .main-content { padding: 12px 8px 75px 8px !important; }
+    .hamburger-btn-mobile { bottom: 68px !important; right: 12px !important; width: 52px !important; height: 52px !important; }
+    .table-wrapper table { font-size: 12px !important; }
 }
 
 /* ============================================ */

@@ -10,6 +10,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
         rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1D4ED8">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
         tailwind.config = {
@@ -59,7 +63,7 @@
                 </div>
                 <div>
                     <p class="text-lg font-extrabold text-white leading-tight">Absensi Siswa</p>
-                    <p class="text-xs font-medium text-blue-200">SMK Digital Nusantara</p>
+                    <p class="text-xs font-medium text-blue-200">SMK BPPI Baleendah</p>
                 </div>
             </div>
 
@@ -92,7 +96,7 @@
                 </div>
             </div>
 
-            <p class="text-xs text-blue-200/70">&copy; {{ date('Y') }} SMK Digital Nusantara</p>
+            <p class="text-xs text-blue-200/70">&copy; {{ date('Y') }} SMK BPPI Baleendah</p>
         </div>
     </div>
 
@@ -105,11 +109,11 @@
                 </div>
                 <div>
                     <p class="text-lg font-extrabold text-slate-900 leading-tight">Absensi Siswa</p>
-                    <p class="text-xs font-medium text-slate-500">SMK Digital Nusantara</p>
+                    <p class="text-xs font-medium text-slate-500">SMK BPPI Baleendah</p>
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-white p-8 sm:p-10 shadow-card">
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 lg:p-10 shadow-card">
                 <div class="mb-8">
                     <h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Selamat Datang</h2>
                     <p class="text-sm text-slate-500 mt-1.5">Masuk ke portal untuk melanjutkan</p>
@@ -154,10 +158,18 @@
                 </form>
             </div>
 
+            <a href="/install" class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i class="ph ph-download-simple"></i> Download Aplikasi
+            </a>
             <p class="mt-6 text-center text-xs text-slate-400">
-                &copy; {{ date('Y') }} SMK Digital Nusantara &middot; Sistem Absensi Siswa
+                &copy; {{ date('Y') }} SMK BPPI Baleendah &middot; Sistem Absensi Siswa
             </p>
         </div>
     </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+        }
+    </script>
 </body>
 </html>
